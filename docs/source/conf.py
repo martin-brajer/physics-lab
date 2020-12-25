@@ -15,11 +15,11 @@ import sys
 
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.join(os.path.abspath(
+sys.path.insert(0, os.path.abspath(
     os.path.dirname(os.path.dirname(os.path.dirname(
         __file__
     )))
-), 'physicslab'))
+))
 import physicslab  # nopep8
 
 
