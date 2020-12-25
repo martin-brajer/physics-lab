@@ -7,7 +7,7 @@
 
 Physics Lab is a free and open-source python package.
 
-Source code can be found on `Github <https://github.com/martin-brajer/physics-lab>`_.
+Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io/en/latest/).
 
 
 # Features
@@ -31,6 +31,7 @@ Versioning follows [Semantic Versioning 2.0.0](https://semver.org/). \
 Following [PEP8 Style Guide](https://www.python.org/dev/peps/pep-0008/) coding conventions. \
 Testing with [unittest](https://docs.python.org/2.7/library/unittest.html#module-unittest)
 and [pycodestyle](https://pypi.org/project/pycodestyle/).
+
 
 # License
 
