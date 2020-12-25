@@ -106,7 +106,7 @@ class Geometry(Enum):
         :return: Is vertical?
         :rtype: bool
         """
-        return self._permutation_sign == 1
+        return self._permutation_sign() == 1
 
     def is_horizontal(self):
         """ Find whether the geometry describes horizontal configuration.
@@ -114,4 +114,4 @@ class Geometry(Enum):
         :return: Is horizontal?
         :rtype: bool
         """
-        return self._permutation_sign == -1
+        return self._permutation_sign() == -1
