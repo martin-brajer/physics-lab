@@ -16,21 +16,21 @@ import sys
 import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath(
-    os.path.dirname(os.path.dirname(os.path.dirname(
-        __file__
-    )))
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 ))
-import physicslab  # nopep8
+print(sys.path)
+# import physicslab  # nopep8
+from physicslab import __version__ as physicslab_version  # nopep8
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Physics Lab'
 copyright = '2020, Martin Brajer'
-author = physicslab.__author__
+# author = physicslab.__author__
 
 # The full version, including alpha/beta/rc tags
-version = release = physicslab.__version__
+version = release = physicslab_version
 
 
 # -- General configuration ---------------------------------------------------
