@@ -1,2 +1,4 @@
 # .github/workflows/requirements.txt
 pycodestyle ~= 2.5.0
+
+numpy ~= 1.19.0
