@@ -26,5 +26,4 @@ jobs:
         pip install -r .github/workflows/requirements.txt
     - name: Test with unittest
       run: |
-        cd tests
         python -m unittest tests
