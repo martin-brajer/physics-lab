@@ -17,9 +17,9 @@ Source code can be found on `Github <https://github.com/martin-brajer/physics-la
 
 # Installation
 
-.. code:: bash
-   
-   pip
+```bash
+pip
+```
 
 
 # How to use this package
