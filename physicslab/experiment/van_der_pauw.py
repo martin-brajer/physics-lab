@@ -10,7 +10,7 @@ from enum import Enum
 import numpy as np
 from scipy.optimize import newton
 
-import physicslab
+import physicslab.utility
 
 
 def solve_square(Rh, Rv):
@@ -93,8 +93,9 @@ class Geometry(Enum):
     R1432 = '1432'
 
     def _permutation_sign(self):
-        """
+        """ Permutation sign of self.
 
+        :return: Permutation sign of self.
         :rtype: float
         """
         return physicslab.utility.permutation_sign(self.value)
