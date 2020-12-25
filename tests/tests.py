@@ -13,7 +13,12 @@ import unittest
 
 import pycodestyle
 
-import physicslab
+try:
+    import physicslab
+except ImportError:
+    import sys
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+    import physicslab
 
 
 class TestCodeFormat(unittest.TestCase):
@@ -50,16 +55,14 @@ class TestCodeFormat(unittest.TestCase):
         self.assertTrue(re.search(pattern, physicslab.__version__))
 
 
-# class TestBlueprintMethods(unittest.TestCase):
+class TestGeometryMethods(unittest.TestCase):
 
-#     @classmethod
-#     def setUpClass(cls):
-#         pass
-#         cls.blueprint =
-
-#     def test_parse_int(self):
-#         self.assertEqual(0, 0)
+    def test_grouping(self):
+        for geometry in physicslab.experiment.van_der_pauw.Geometry:
+            self.assertTrue(
+                geometry.is_vertical() or geometry.is_horizontal()
+            )
 
 
 if __name__ == '__main__':
-    unittest.main(exit=False)  # verbosity=2
+    unittest.main(exit=False)  # verbosity=2)
