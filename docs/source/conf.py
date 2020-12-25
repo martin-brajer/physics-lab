@@ -18,16 +18,17 @@ import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 ))
-print(sys.path)
+# readthedocs.org/ cannot import physicslab directly.
 # import physicslab  # nopep8
 from physicslab import __version__ as physicslab_version  # nopep8
+from physicslab import __author__ as physicslab_author  # nopep8
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'Physics Lab'
 copyright = '2020, Martin Brajer'
-# author = physicslab.__author__
+author = physicslab_author
 
 # The full version, including alpha/beta/rc tags
 version = release = physicslab_version
