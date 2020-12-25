@@ -3,18 +3,16 @@
 
 |Last release| |License| |Documentation Status|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/card-assembler/badge/?version=latest
-   :target: https://card-assembler.readthedocs.io/en/latest/?badge=latest
-.. |License| image:: https://img.shields.io/github/license/martin-brajer/card-assembler
-   :target: https://github.com/martin-brajer/card-assembler/blob/master/LICENSE
-.. |Last release| image:: https://img.shields.io/github/v/release/martin-brajer/card-assembler
-   :target: https://github.com/martin-brajer/card-assembler/releases
+.. |Documentation Status| image:: https://readthedocs.org/projects/physics-lab/badge/?version=latest
+   :target: https://physics-lab.readthedocs.io/en/latest/?badge=latest
+.. |License| image:: https://img.shields.io/github/license/martin-brajer/physics-lab
+   :target: https://github.com/martin-brajer/physics-lab/blob/main/LICENSE
+.. |Last release| image:: https://img.shields.io/github/v/release/martin-brajer/physics-lab
+   :target: https://github.com/martin-brajer/physics-lab/releases
 
-Card Assembler is a free and open-source plug-in for
-`Gimp <https://www.gimp.org/>`_. Assembles an image according to an XML file
-blueprint. Meant for board game card creation.
+Physics Lab is a free and open-source python package.
 
-Source code can be found on `Github <https://github.com/martin-brajer/card-assembler>`_.
+Source code can be found on `Github <https://github.com/martin-brajer/physics-lab>`_.
 
 
 Features
@@ -29,7 +27,7 @@ Installation
    
    pip
 
-How to use this ...
+How to use this package
 -----------------------
 
 
@@ -45,6 +43,6 @@ Compliance
 License
 -------
 
-Card Assembler is licensed under the `MIT license`_.
+Physics Lab is licensed under the `MIT license`_.
 
-.. _MIT license: https://github.com/martin-brajer/card-assembler/blob/master/LICENSE
+.. _MIT license: https://github.com/martin-brajer/physics-lab/blob/main/LICENSE
