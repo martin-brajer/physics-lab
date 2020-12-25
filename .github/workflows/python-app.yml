@@ -5,9 +5,9 @@ name: Python unittest
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -26,5 +26,5 @@ jobs:
         pip install -r .github/workflows/requirements.txt
     - name: Test with unittest
       run: |
-        cd src
-        python -m unittest test_card_assembler
+        cd tests
+        python -m unittest tests
