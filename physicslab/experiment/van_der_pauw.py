@@ -31,7 +31,7 @@ def solve_square(Rh, Rv):
     return Rs
 
 
-def solve_numerical(Rh, Rv, Rs=None):
+def solve_general(Rh, Rv, Rs=None):
     """Count sheet resistance from the given Pauw resistances.
 
     Universal formula.
