@@ -1,12 +1,13 @@
 import setuptools
+import physicslab
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="physicslab",
-    version="0.1.1",
-    author="Martin Brajer",
+    version=physicslab.__version__,
+    author=physicslab.__author__,
     author_email="martin.brajer@seznam.cz",
     description="Physics experiments evaluation.",
     long_description=long_description,
