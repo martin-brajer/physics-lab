@@ -1,16 +1,14 @@
 .. Referenced in ``index.rst`` and ``cardAssemblerOverview`` with
    different titles following its roles.
 
-|Last release| |License| |Unittest| |Documentation Status| |PyPI|
+|License| |Unittest| |Documentation Status| |PyPI|
 
-.. |Documentation Status| image:: https://readthedocs.org/projects/physics-lab/badge/?version=latest
-   :target: https://physics-lab.readthedocs.io/en/latest/?badge=latest
 .. |License| image:: https://img.shields.io/github/license/martin-brajer/physics-lab
    :target: https://github.com/martin-brajer/physics-lab/blob/main/LICENSE
 .. |Unittest| image:: https://github.com/martin-brajer/physics-lab/workflows/Python%20unittest/badge.svg
    :target: https://github.com/martin-brajer/card-assembler/actions
-.. |Last release| image:: https://img.shields.io/github/v/release/martin-brajer/physics-lab
-   :target: https://github.com/martin-brajer/physics-lab/releases
+.. |Documentation Status| image:: https://readthedocs.org/projects/physics-lab/badge/?version=latest
+   :target: https://physics-lab.readthedocs.io/en/latest/?badge=latest
 .. |PyPI| image:: https://badge.fury.io/py/physicslab.svg
     :target: https://badge.fury.io/py/physicslab
 

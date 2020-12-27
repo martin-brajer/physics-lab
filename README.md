@@ -1,6 +1,5 @@
 # Physics Lab
 
-[![Releases](https://img.shields.io/github/v/release/martin-brajer/physics-lab)](https://github.com/martin-brajer/physics-lab/releases)
 [![GitHub](https://img.shields.io/github/license/martin-brajer/physics-lab)](https://github.com/martin-brajer/physics-lab/blob/main/LICENSE)
 [![Unittest](https://github.com/martin-brajer/physics-lab/workflows/Python%20unittest/badge.svg)](https://github.com/martin-brajer/card-assembler/actions)
 [![Documentation Status](https://readthedocs.org/projects/physics-lab/badge/?version=latest)](https://physics-lab.readthedocs.io/en/latest/?badge=latest)
