@@ -53,7 +53,8 @@ autodoc_member_order = 'bysource'
 # the Python standard library
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.6', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None)
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
