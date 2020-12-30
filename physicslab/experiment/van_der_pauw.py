@@ -1,7 +1,9 @@
 """
 Van der Pauw resistivity measurement.
 
-Four-point measurement bypass resistance of ohmic contacts.
+| Four-point measurement bypass resistance of ohmic contacts.
+| To find resistivity from sheet resistance, use
+    :mod:`physicslab.electricity.Resistivity.from_sheet_resistance` method.
 """
 
 
@@ -11,16 +13,18 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
-import physicslab.utility
+import physicslab.utility as pl_ut
 import physicslab.electricity as pl_el
 
 
 def process(data):
     """ Bundle method.
 
-    If :attr:`data` does include :data:`Measurement.RESISTANCE` column
+    Parameter :attr:`data` must include `geometry` column. Then either
+    `voltage` and `current` or `resistance`. See :class:`Measurement`
+    for details and column names.
 
-    :param data: [description]
+    :param data: Measured data
     :type data: pandas.DataFrame
     :return: Sheet resistance
     :rtype: float
@@ -28,13 +32,12 @@ def process(data):
     measurement = Measurement(data)
     if measurement.resistance_isnull():
         measurement.find_resistances()
-    Rh, Rv = measurement.split_and_average()
+    Rh, Rv = measurement.group_and_average()
     return measurement.solve_for_sheet_resistance(Rh, Rv)
 
 
 class Solve:
-    """
-    """
+    """ Van der Pauw formula and means to solve it. """
 
     @staticmethod
     def implicit_formula(Rs, Rh, Rv):
@@ -44,23 +47,30 @@ class Solve:
         | :math:`func(R_s) = exp(-\\pi R_v/R_s) + exp(-\\pi R_h/R_s) - 1`.
         | This function's roots give the solution.
 
-        :param Rs: Sheet resistance. Solve for this, so MUST be first.
+        :param Rs: Sheet resistance. Independent variable - MUST be first
         :type Rs: float
         :param Rh: Horizontal resistance
         :type Rh: float
         :param Rv: Vertical resistance
         :type Rv: float
-        :return: We choose the coefficients such that return value
-            is zero
+        :return: We choose the coefficients such that return value is zero
         :rtype: float
         """
         return np.exp(-np.pi * Rv / Rs) + np.exp(-np.pi * Rh / Rs) - 1
 
     @staticmethod
     def solve(Rh, Rv):
-        Rs = Measurement.solve_square(Rh, Rv)
-        return scipy_optimize_newton(
-            implicit_formula, Rs, args=(Rh, Rv), fprime=None)
+        """ Common computation flow.
+
+        :param Rh: Horizontal resistance
+        :type Rh: float
+        :param Rv: Vertical resistance
+        :type Rv: float
+        :return: Sheet resistance
+        :rtype: float
+        """
+        Rs0 = Measurement.solve_square(Rh, Rv)
+        return Solve.universal(Rh, Rv, Rs0)
 
     @staticmethod
     def square(Rh, Rv):
@@ -80,7 +90,7 @@ class Solve:
         return R * van_der_pauw_constant
 
     @staticmethod
-    def general(Rh, Rv, Rs0):
+    def universal(Rh, Rv, Rs0):
         """ Compute sheet resistance from the given resistances.
 
         Universal formula.
@@ -102,7 +112,7 @@ class Solve:
 class Measurement:
     """ Van der Pauw resistances measurements.
 
-    :param data: [description], defaults to None
+    :param data: Voltage/current pairs or resistances, defaults to None
     :type data: pandas.DataFrame, optional
     """
     #: Class variable :data:`data`: geometry column name of
@@ -134,41 +144,46 @@ class Measurement:
                 )
 
     @classmethod
-    def get_columns(cls):
+    def get_columns(cls, voltage_current=True, resistance=True):
         """ Columns of :data:`data`.
 
+        Geometry column is always included.
+
+        :param voltage_current: Include voltage and current columns,
+            defaults to True
+        :type voltage_current: bool, optional
+        :param resistance: Include resistance column, defaults to True
+        :type resistance: bool, optional
         :return: List of names. Actual names are saved in class variables.
-        :rtype: list
+        :rtype: list(str)
         """
-        return [cls.GEOMETRY, cls.VOLTAGE, cls.CURRENT, cls.RESISTANCE]
+        output = [cls.GEOMETRY]
+        if voltage_current:
+            output.extend([cls.VOLTAGE, cls.CURRENT])
+        if resistance:
+            output.append(cls.RESISTANCE)
+        return output
 
     def resistance_isnull(self):
-        """ Resistance not exists or isnull.
+        """ Resistance column not exists or isnull.
 
-        :return: [description]
+        :return: Not exists or isnull
         :rtype: bool
         """
-        if self.RESISTANCE not in self.data.columns:
-            return True
-        return self.data[self.RESISTANCE].isnull().any()
+        return (self.RESISTANCE not in self.data.columns
+                or self.data[self.RESISTANCE].isnull().any())
 
     def find_resistances(self):
         """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
         self.data[self.RESISTANCE] = pl_el.Resistance.from_ohms_law(
             self.data[self.VOLTAGE], self.data[self.CURRENT])
 
-    def add(self, geometry, voltage, current):
-        self.data = self.data.append({
-            self.GEOMETRY: geometry,
-            self.VOLTAGE: voltage,
-            self.CURRENT: current
-        }, ignore_index=True)
+    def group_and_average(self):
+        """ Classify geometries into either :class:`Geometry.Horizontal`
+        or :class:`Geometry.Vertical`. Then average respective resistances.
 
-    def split_and_average(self):
-        """
-
-        :return: [description]
-        :rtype: [type]
+        :return: Horizontal and vertical sheet resistances
+        :rtype: tuple(float, float)
         """
         self.data[self.GEOMETRY] = self.data[self.GEOMETRY].apply(
             Geometry.classify)
@@ -184,19 +199,20 @@ class Measurement:
         )
 
     def solve_for_sheet_resistance(self, Rh, Rv):
-        """[summary]
+        """ Solve :meth:`Solve.implicit_formula` to find sample's
+        sheet resistance. Also compute resistance symmetry ratio (how
+        squarish the sample is).
 
-        :param Rh: [description]
-        :type Rh: [type]
-        :param Rv: [description]
-        :type Rv: [type]
-        :return: [description]
-        :rtype: [type]
+        :param Rh: Horizontal resistance
+        :type Rh: float
+        :param Rv: Vertical resistance
+        :type Rv: float
+        :return: Sheet resistance and symmetry ratio
+        :rtype: tuple(float, float)
         """
         Rs0 = Solve.square(Rh, Rv)
-        sheet_resistance = Solve.general(Rh, Rv, Rs0)
+        sheet_resistance = Solve.universal(Rh, Rv, Rs0)
 
-        # Ratio of vertical and horizontal resistances.
         resistance_ratio = Rh / Rv
         if resistance_ratio < 1:
             resistance_ratio = 1 / resistance_ratio
@@ -228,10 +244,10 @@ class Geometry(enum.Enum):
 
     def _permutation_sign(self):
         """
-        :return: Permutation sign of self.
+        :return: Permutation sign of :data:`self.value`.
         :rtype: float
         """
-        return physicslab.utility.permutation_sign(self.value)
+        return pl_ut.permutation_sign(self.value)
 
     def is_horizontal(self):
         """ Find whether the geometry describes horizontal configuration.
