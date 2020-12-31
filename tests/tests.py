@@ -63,6 +63,42 @@ class TestGeometryMethods(unittest.TestCase):
                 geometry.is_vertical() or geometry.is_horizontal()
             )
 
+    def test_shift(self):
+        self.assertEqual(
+            physicslab.experiment.van_der_pauw.Geometry.R2341,
+            physicslab.experiment.van_der_pauw.Geometry.shift(
+                physicslab.experiment.van_der_pauw.Geometry.R4123,
+                number=2
+            ),
+        )
+        self.assertEqual(
+            physicslab.experiment.van_der_pauw.Geometry.R2341,
+            physicslab.experiment.van_der_pauw.Geometry.shift(
+                physicslab.experiment.van_der_pauw.Geometry.R4123,
+                number=-2
+            ),
+        )
+        self.assertEqual(
+            physicslab.experiment.van_der_pauw.Geometry.RHorizontal,
+            physicslab.experiment.van_der_pauw.Geometry.shift(
+                physicslab.experiment.van_der_pauw.Geometry.RVertical,
+            ),
+        )
+
+    def test_reverse_polarity(self):
+        self.assertEqual(
+            physicslab.experiment.van_der_pauw.Geometry.R1432,
+            physicslab.experiment.van_der_pauw.Geometry.reverse_polarity(
+                physicslab.experiment.van_der_pauw.Geometry.R4123,
+            ),
+        )
+        self.assertEqual(
+            physicslab.experiment.van_der_pauw.Geometry.RHorizontal,
+            physicslab.experiment.van_der_pauw.Geometry.reverse_polarity(
+                physicslab.experiment.van_der_pauw.Geometry.RHorizontal,
+            ),
+        )
+
 
 if __name__ == '__main__':
     unittest.main(exit=False)  # verbosity=2)
