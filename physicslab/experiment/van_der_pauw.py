@@ -6,30 +6,28 @@ Van der Pauw resistivity measurement.
     :mod:`physicslab.electricity.Resistivity.from_sheet_resistance` method.
 """
 
-
 import enum
 
 import numpy as np
 import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
-import physicslab.utility as pl_ut
-import physicslab.electricity as pl_el
+import physicslab.utility
 
 
-def process(data):
+def process(measurement):
     """ Bundle method.
 
     Parameter :attr:`data` must include `geometry` column. Then either
     `voltage` and `current` or `resistance`. See :class:`Measurement`
     for details and column names.
 
-    :param data: Measured data
-    :type data: pandas.DataFrame
+    :param measurement: Measured data
+    :type measurement: pandas.DataFrame
     :return: Sheet resistance
     :rtype: float
     """
-    measurement = Measurement(data)
+    measurement = Measurement(measurement)
     if measurement.resistance_isnull():
         measurement.find_resistances()
     Rh, Rv = measurement.group_and_average()
@@ -69,7 +67,7 @@ class Solve:
         :return: Sheet resistance
         :rtype: float
         """
-        Rs0 = Measurement.solve_square(Rh, Rv)
+        Rs0 = Solve.square(Rh, Rv)
         return Solve.universal(Rh, Rv, Rs0)
 
     @staticmethod
@@ -175,8 +173,10 @@ class Measurement:
 
     def find_resistances(self):
         """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
-        self.data[self.RESISTANCE] = pl_el.Resistance.from_ohms_law(
-            self.data[self.VOLTAGE], self.data[self.CURRENT])
+        self.data.loc[:, self.RESISTANCE] = (
+            physicslab.electricity.Resistance.from_ohms_law(
+                self.data[self.VOLTAGE], self.data[self.CURRENT])
+        )
 
     def group_and_average(self):
         """ Classify geometries into either :class:`Geometry.Horizontal`
@@ -185,7 +185,7 @@ class Measurement:
         :return: Horizontal and vertical sheet resistances
         :rtype: tuple(float, float)
         """
-        self.data[self.GEOMETRY] = self.data[self.GEOMETRY].apply(
+        self.data.loc[:, self.GEOMETRY] = self.data[self.GEOMETRY].apply(
             Geometry.classify)
         group = {
             Geometry.RHorizontal: [],
@@ -193,10 +193,9 @@ class Measurement:
         }
         for i, row in self.data.iterrows():
             group[row[self.GEOMETRY]].append(row[self.RESISTANCE])
-        return (
-            np.average(group[Geometry.RHorizontal]),  # Rh
-            np.average(group[Geometry.RVertical])  # Rv
-        )
+        Rh = np.average(group[Geometry.RHorizontal])
+        Rv = np.average(group[Geometry.RVertical])
+        return Rh, Rv
 
     def solve_for_sheet_resistance(self, Rh, Rv):
         """ Solve :meth:`Solve.implicit_formula` to find sample's
@@ -242,12 +241,57 @@ class Geometry(enum.Enum):
     RVertical = '12'
     RHorizontal = '21'
 
+    @staticmethod
+    def reverse_polarity(geometry):
+        """ Reverse polarity of voltage and current.
+
+        :param geometry: Input
+        :type geometry: Geometry
+        :return: Reversed geometry
+        :rtype: Geometry
+        """
+        old_value = geometry.value
+        if len(old_value) == 2:
+            return geometry
+
+        new_value = ''.join(
+            [old_value[i:i+2][::-1] for i in range(0, len(old_value), 2)]
+        )
+        return Geometry(new_value)
+
+    @staticmethod
+    def rotate(geometry, number=1, counterclockwise=True):
+        """ Rotate measuring pins counterclockwise.
+
+        :param geometry: Input
+        :type geometry: Geometry
+        :param number: Number of pins to jump. Must be between -4 and 4,
+            defaults to 1
+        :type number: int, optional
+        :param counterclockwise: Direction of rotation, defaults to True
+        :type counterclockwise: bool, optional
+        :raises AttributeError: If parameter :attr:`number` is not
+            between -4 and 4
+        :return: Rotated geometry
+        :rtype: Geometry
+        """
+        old_value = geometry.value
+
+        if number > np.abs(len(old_value)):
+            raise AttributeError(
+                'Parameter "number" must be between -4 and 4!')
+        if not counterclockwise:
+            number *= -1
+
+        new_value = old_value[-number:] + old_value[:-number]
+        return Geometry(new_value)
+
     def _permutation_sign(self):
         """
         :return: Permutation sign of :data:`self.value`.
         :rtype: float
         """
-        return pl_ut.permutation_sign(self.value)
+        return physicslab.utility.permutation_sign(self.value)
 
     def is_horizontal(self):
         """ Find whether the geometry describes horizontal configuration.
@@ -270,7 +314,7 @@ class Geometry(enum.Enum):
         """ Sort given Geometry to either vertical or horizontal group.
 
         :param geometry: Geometry to evaluate
-        :type geometry: :class:`Geometry`
+        :type geometry: Geometry
         :return: One of the two main configurations
         :rtype: :class:`Geometry`
         """
@@ -286,11 +330,13 @@ class Geometry(enum.Enum):
         :param geometry: Geometry to evaluate
         :type geometry: :class:`Geometry` or :class:`pandas.Series`
         :return: One of the two main directions
-        :rtype: :class:`Geometry`
+        :rtype: Geometry
         """
         if isinstance(geometry, Geometry):
             return Geometry._classify(geometry)
+
         elif isinstance(geometry, pd.Series):
             return geometry.apply(Geometry._classify)
+
         else:
             raise NotImplemented
