@@ -260,8 +260,8 @@ class Geometry(enum.Enum):
         return Geometry(new_value)
 
     @staticmethod
-    def rotate(geometry, number=1, counterclockwise=True):
-        """ Rotate measuring pins counterclockwise.
+    def shift(geometry, number=1, counterclockwise=True):
+        """ Shift used measuring pins counterclockwise.
 
         :param geometry: Input
         :type geometry: Geometry
