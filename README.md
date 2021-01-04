@@ -5,14 +5,14 @@
 [![Documentation Status](https://readthedocs.org/projects/physics-lab/badge/?version=latest)](https://physics-lab.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/physicslab.svg)](https://badge.fury.io/py/physicslab)
 
-Physics Lab is a free and open-source python package.
+Physics Lab is a free and open-source python package. Helps with common experiments.
 
 Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io/en/latest/).
 
 
 # Features
 
-* feature 1
+* Van der Pauw method
 
 
 # Installation

@@ -12,7 +12,7 @@
 .. |PyPI| image:: https://badge.fury.io/py/physicslab.svg
     :target: https://badge.fury.io/py/physicslab
 
-Physics Lab is a free and open-source python package.
+Physics Lab is a free and open-source python package. Helps with common experiments.
 
 Source code can be found on `Github <https://github.com/martin-brajer/physics-lab>`_.
 
@@ -20,7 +20,7 @@ Source code can be found on `Github <https://github.com/martin-brajer/physics-la
 Features
 --------
 
-* feature 1
+* Van der Pauw method
 
 
 Installation

@@ -10,11 +10,13 @@ Experiment subpackage
 
 .. automodule:: physicslab.experiment
    :members:
+   :undoc-members:
 
 .. toctree::
    :maxdepth: 4
 
    experiment/van_der_pauw
+   experiment/hall
 
 Submodules
 ----------
