@@ -6,10 +6,11 @@ Physics Lab package helps with common experiments.
 __version__ = '0.1.1'
 __author__ = 'Martin Brajer'
 
-import physicslab.experiment
 
-import physicslab.curves
-import physicslab.electricity
-import physicslab.utility
-import physicslab.io
-import physicslab.ui
+from physicslab import experiment
+
+from physicslab import curves
+from physicslab import electricity
+from physicslab import utility
+from physicslab import io
+from physicslab import ui

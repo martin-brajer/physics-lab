@@ -3,8 +3,9 @@ Modules for particular experiments.
 """
 
 
-import physicslab.experiment.van_der_pauw
-import physicslab.experiment.hall
+from physicslab.experiment import van_der_pauw
+from physicslab.experiment import hall
+from physicslab.experiment import utility
 
 
 def process(measurements, by_module, **kwargs):

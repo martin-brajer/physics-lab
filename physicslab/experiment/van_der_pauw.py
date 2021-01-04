@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
-import physicslab.utility
-import physicslab.electricity as pl_el
+from physicslab.utility import permutation_sign
+from physicslab.electricity import Resistivity, Resistance
 
 
 #: Column names used in :meth:`process` function.
@@ -51,7 +51,7 @@ def process(data, thickness=None):
     if thickness is None:
         resistivity, conductivity = np.nan, np.nan
     else:
-        resistivity = pl_el.Resistivity.from_sheet_resistance(
+        resistivity = Resistivity.from_sheet_resistance(
             sheet_resistance, thickness)
         conductivity = sheet_conductance / thickness
 
@@ -204,7 +204,7 @@ class Measurement:
     def find_resistances(self):
         """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
         self.data.loc[:, self.RESISTANCE] = (
-            physicslab.electricity.Resistance.from_ohms_law(
+            Resistance.from_ohms_law(
                 self.data[self.VOLTAGE], self.data[self.CURRENT])
         )
 
@@ -325,7 +325,7 @@ class Geometry(enum.Enum):
         :return: Permutation sign of :data:`self.value`.
         :rtype: float
         """
-        return physicslab.utility.permutation_sign(self.value)
+        return permutation_sign(self.value)
 
     def is_horizontal(self):
         """ Find whether the geometry describes horizontal configuration.

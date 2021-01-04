@@ -2,14 +2,16 @@
 Hall
 """
 
+
 import numpy as np
 import pandas as pd
 
 from scipy.constants import e as elementary_charge
 
-import physicslab.electricity as pl_el
+from physicslab.electricity import carrier_concentration, Mobility, Resistance
 
 
+#: Column names used in :meth:`process` function.
 PROCESS_COLUMNS = [
     'sheet_density',
     'conductivity_type',
@@ -28,9 +30,9 @@ def process(data, thickness=None, sheet_resistance=None):
      ) = measurement.solve_for_sheet_density(full=True)
 
     concentration = np.nan if thickness is None \
-        else pl_el.carrier_concentration(sheet_density, thickness)
+        else carrier_concentration(sheet_density, thickness)
     mobility = np.nan if sheet_resistance is None \
-        else pl_el.Mobility.from_sheets(sheet_density, sheet_resistance)
+        else Mobility.from_sheets(sheet_density, sheet_resistance)
 
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
@@ -74,7 +76,7 @@ class Measurement:
             return 'n'
 
     def solve_for_sheet_density(self, full=False):
-        self.data['hall_resistance'] = pl_el.Resistance.from_ohms_law(
+        self.data['hall_resistance'] = Resistance.from_ohms_law(
             self.data['VH'], self.data['I'])
         coefficients_full = np.polynomial.polynomial.polyfit(
             self.data['hall_resistance'], self.data['B'], 1, full=True)
