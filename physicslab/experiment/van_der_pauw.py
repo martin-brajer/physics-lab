@@ -13,25 +13,52 @@ import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
 import physicslab.utility
+import physicslab.electricity as pl_el
 
 
-def process(measurement):
+#: Column names used in :meth:`process` function.
+PROCESS_COLUMNS = [
+    'sheet_resistance',
+    'resistance_ratio',
+    'sheet_conductance',
+    'resistivity',
+    'conductivity',
+]
+
+
+def process(data, thickness=None):
     """ Bundle method.
 
     Parameter :attr:`data` must include `geometry` column. Then either
     `voltage` and `current` or `resistance`. See :class:`Measurement`
     for details and column names.
 
-    :param measurement: Measured data
-    :type measurement: pandas.DataFrame
-    :return: Sheet resistance
-    :rtype: float
+    :param data: Measured data
+    :type data: pandas.DataFrame
+    :return: Sheet resistance and symmetry ratio
+    :rtype: tuple
     """
-    measurement = Measurement(measurement)
-    if measurement.resistance_isnull():
-        measurement.find_resistances()
+    if data is None:
+        return pd.DataFrame(columns=PROCESS_COLUMNS)
+
+    measurement = Measurement(data)
+    measurement.find_resistances()
     Rh, Rv = measurement.group_and_average()
-    return measurement.solve_for_sheet_resistance(Rh, Rv)
+    sheet_resistance, resistance_ratio = (
+        measurement.solve_for_sheet_resistance(Rh, Rv, full=True))
+    sheet_conductance = 1 / sheet_resistance
+
+    if thickness is None:
+        resistivity, conductivity = np.nan, np.nan
+    else:
+        resistivity = pl_el.Resistivity.from_sheet_resistance(
+            sheet_resistance, thickness)
+        conductivity = sheet_conductance / thickness
+
+    return pd.Series(
+        data=(sheet_resistance, resistance_ratio, sheet_conductance,
+              resistivity, conductivity),
+        index=PROCESS_COLUMNS)
 
 
 class Solve:
@@ -110,8 +137,11 @@ class Solve:
 class Measurement:
     """ Van der Pauw resistances measurements.
 
-    :param data: Voltage/current pairs or resistances, defaults to None
+    :param data: Voltage/current pairs or resistances with respective
+        geometry, defaults to None
     :type data: pandas.DataFrame, optional
+    :raises AttributeError: If :attr:`data` doesn't include
+        :data:`Measurement.GEOMETRY` column.
     """
     #: Class variable :data:`data`: geometry column name of
     #: type :class:`Geometry`.
@@ -197,7 +227,7 @@ class Measurement:
         Rv = np.average(group[Geometry.RVertical])
         return Rh, Rv
 
-    def solve_for_sheet_resistance(self, Rh, Rv):
+    def solve_for_sheet_resistance(self, Rh, Rv, full=False):
         """ Solve :meth:`Solve.implicit_formula` to find sample's
         sheet resistance. Also compute resistance symmetry ratio (how
         squarish the sample is).
@@ -206,8 +236,9 @@ class Measurement:
         :type Rh: float
         :param Rv: Vertical resistance
         :type Rv: float
-        :return: Sheet resistance and symmetry ratio
-        :rtype: tuple(float, float)
+        :return: Sheet resistance. If :attr:`full` return tuple of
+            sheet resistance and symmetry ratio
+        :rtype: float or tuple(float, float)
         """
         Rs0 = Solve.square(Rh, Rv)
         sheet_resistance = Solve.universal(Rh, Rv, Rs0)
@@ -216,7 +247,10 @@ class Measurement:
         if resistance_ratio < 1:
             resistance_ratio = 1 / resistance_ratio
 
-        return sheet_resistance, round(resistance_ratio, ndigits=1)
+        if full:
+            return sheet_resistance, round(resistance_ratio, ndigits=1)
+        else:
+            return sheet_resistance
 
 
 class Geometry(enum.Enum):
