@@ -5,7 +5,6 @@ Modules for particular experiments.
 
 from physicslab.experiment import van_der_pauw
 from physicslab.experiment import hall
-from physicslab.experiment import utility
 
 
 def process(measurements, by_module, **kwargs):
