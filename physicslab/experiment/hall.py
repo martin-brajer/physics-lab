@@ -22,9 +22,6 @@ PROCESS_COLUMNS = [
 
 
 def process(data, thickness=None, sheet_resistance=None):
-    if data is None:
-        return pd.DataFrame(columns=PROCESS_COLUMNS)
-
     measurement = Measurement(data)
     (sheet_density, conductivity_type, residual
      ) = measurement.solve_for_sheet_density(full=True)

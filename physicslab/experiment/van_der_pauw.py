@@ -38,9 +38,6 @@ def process(data, thickness=None):
     :return: Sheet resistance and symmetry ratio
     :rtype: tuple
     """
-    if data is None:
-        return pd.DataFrame(columns=PROCESS_COLUMNS)
-
     measurement = Measurement(data)
     measurement.find_resistances()
     Rh, Rv = measurement.group_and_average()
