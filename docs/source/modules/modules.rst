@@ -3,14 +3,12 @@ Library
 
 .. automodule:: physicslab
    :members:
-   :undoc-members:
 
 Experiment subpackage
 ---------------------
 
 .. automodule:: physicslab.experiment
    :members:
-   :undoc-members:
 
 **Submodules:**
 
