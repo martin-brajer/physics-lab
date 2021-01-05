@@ -10,6 +10,18 @@ from physicslab.experiment import hall
 
 
 def process(measurements, by_module, **kwargs):
+    """ Genereal process function calling appropriate *process* function
+    from selected :mod:`experiment` module.
+
+    :param measurements: List of pairs ``(name, data)``. The latter one
+        is passed to appropriate *process* method
+    :type measurements: list(tuple)
+    :param by_module: By which module should the :attr:`measurements` be
+        processed
+    :type by_module: :mod:`experiment` submodule
+    :return: Collection of results labelled by :attr:`name`
+    :rtype: pandas.DataFrame
+    """
     output = pd.DataFrame(columns=by_module.PROCESS_COLUMNS)
     for name, data in measurements:
         series = by_module.process(data, **kwargs)
