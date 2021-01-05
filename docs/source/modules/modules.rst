@@ -12,14 +12,16 @@ Experiment subpackage
    :members:
    :undoc-members:
 
+**Submodules:**
+
 .. toctree::
    :maxdepth: 4
 
    experiment/van_der_pauw
    experiment/hall
 
-Submodules
-----------
+Modules
+-------
 
 .. toctree::
    :maxdepth: 4
