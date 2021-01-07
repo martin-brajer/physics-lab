@@ -1,5 +1,7 @@
 """
-Hall
+Hall measurement.
+
+Induced voltage perpendicular to both current and magnetic field.
 """
 
 
@@ -22,6 +24,24 @@ PROCESS_COLUMNS = [
 
 
 def process(data, thickness=None, sheet_resistance=None):
+    """ Bundle method.
+
+    Parameter :attr:`data` must include voltage/current/magnetic field
+    triples. See :class:`Measurement` for details and column names.
+
+    The optional parameters allows to calculate additional quantities:
+    `concentration` and `mobility`.
+
+    :param data: Measured data
+    :type data: pandas.DataFrame
+    :param thickness: Sample dimension perpendicular to the plane marked
+        by the electrical contacts, defaults to None
+    :type thickness: float, optional
+    :param sheet_resistance: Defaults to None
+    :type sheet_resistance: float, optional
+    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :rtype: pandas.Series
+    """
     measurement = Measurement(data)
     (sheet_density, conductivity_type, residual
      ) = measurement.solve_for_sheet_density(full=True)
@@ -40,26 +60,36 @@ def process(data, thickness=None, sheet_resistance=None):
 class Measurement:
     """ Hall measurement.
 
-    :param data: Voltage/current/magnetic field triples, defaults to None
-    :type data: pandas.DataFrame, optional
+    :param data: Voltage/current/magnetic field triples. See class
+        variables for default column names.
+    :type data: pandas.DataFrame
     :raises AttributeError: If :attr:`data` doesn't include
         :meth:`get_columns` columns.
     """
 
-    def __init__(self, data=None):
-        #: Measurement data as :class:`pandas.DataFrame`.
-        self.data = None
+    #: :data:`data` magnetic field column name of type :class:`float`.
+    MAGNETICFIELD = 'B'
+    #: :data:`data` Hall voltage column name of type :class:`float`.
+    HALLVOLTAGE = 'VH'
+    #: :data:`data` current column name of type :class:`float`.
+    CURRENT = 'I'
 
+    def __init__(self, data):
         if all(column in Measurement.get_columns() for column in data.columns):
             self.data = data
         else:
             raise AttributeError(
                 ':attr:`data` must include {} columns.'.format(
-                    Measurement.get_columns()))
+                    self.get_columns()))
 
-    @staticmethod
-    def get_columns():
-        return ['B', 'VH', 'I']
+    @classmethod
+    def get_columns(cls):
+        """ Columns of :data:`data`.
+
+        :return: List of names. Actual names are saved in class variables.
+        :rtype: list(str)
+        """
+        return [cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT]
 
     def is_valid(self):
         # Is hall measurement linear enough?
@@ -67,12 +97,28 @@ class Measurement:
 
     @staticmethod
     def _conductivity_type(hall_voltage):
+        """ Find conductivity type based on sign of hall voltage.
+
+        :param hall_voltage: Hall voltage
+        :type hall_voltage: float
+        :return: Either "p" or "n"
+        :rtype: str
+        """
         if hall_voltage > 0:
             return 'p'
         else:
             return 'n'
 
     def solve_for_sheet_density(self, full=False):
+        """ Compute sheet density and determine conductivity type.
+
+        :param full: Switch determining the nature of the return value. When
+            `False` just sheet density and conductivity type are returned.
+            When `True`, fit residual is also returned, defaults to False
+        :type full: bool, optional
+        :return: Sheet density, conductivity type, (fit residual)
+        :rtype: tuple
+        """
         self.data['hall_resistance'] = Resistance.from_ohms_law(
             self.data['VH'], self.data['I'])
         coefficients_full = np.polynomial.polynomial.polyfit(

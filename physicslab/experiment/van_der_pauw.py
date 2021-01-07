@@ -33,10 +33,16 @@ def process(data, thickness=None):
     `voltage` and `current` or `resistance`. See :class:`Measurement`
     for details and column names.
 
+    The optional parameter allows to calculate additional quantities:
+    `resistivity` and `conductivity`.
+
     :param data: Measured data
     :type data: pandas.DataFrame
-    :return: Sheet resistance and symmetry ratio
-    :rtype: tuple
+    :param thickness: Sample dimension perpendicular to the plane marked
+        by the electrical contacts, defaults to None
+    :type thickness: float, optional
+    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :rtype: pandas.Series
     """
     measurement = Measurement(data)
     measurement.find_resistances()
