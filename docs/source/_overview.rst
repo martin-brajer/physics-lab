@@ -10,7 +10,7 @@
 .. |Documentation Status| image:: https://readthedocs.org/projects/physics-lab/badge/?version=latest
    :target: https://physics-lab.readthedocs.io/en/latest/?badge=latest
 .. |PyPI| image:: https://badge.fury.io/py/physicslab.svg
-    :target: https://badge.fury.io/py/physicslab
+    :target: https://pypi.org/project/physicslab/
 
 Physics Lab is a free and open-source python package. Helps with common experiments.
 
