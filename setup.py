@@ -30,5 +30,6 @@ setuptools.setup(
         'pandas',
         'scipy',
         'ezodf',
+        'lxml',
     ],
 )
