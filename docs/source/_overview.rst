@@ -20,7 +20,8 @@ Source code can be found on `Github <https://github.com/martin-brajer/physics-la
 Features
 --------
 
-* Van der Pauw method
+* Van der Pauw & Hall method
+* Batch measurement evaluation
 
 
 Installation

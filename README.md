@@ -12,7 +12,8 @@ Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io
 
 # Features
 
-* Van der Pauw method
+* Van der Pauw & Hall method
+* Batch measurement evaluation
 
 
 # Installation
