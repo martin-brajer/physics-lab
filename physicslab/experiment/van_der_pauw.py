@@ -328,4 +328,4 @@ class Geometry(enum.Enum):
             return geometry.apply(Geometry._classify)
 
         else:
-            raise NotImplemented()
+            raise NotImplementedError()
