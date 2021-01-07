@@ -13,6 +13,9 @@ def process(measurements, by_module, **kwargs):
     """ Genereal process function calling appropriate *process* function
     from selected :mod:`experiment` module.
 
+    If you want to use simple list of measurements, wrap :attr:`measurements`
+    argument in :func:`enumerate` method.
+
     :param measurements: List of pairs ``(name, data)``. The latter one
         is passed to appropriate *process* method
     :type measurements: list(tuple)
