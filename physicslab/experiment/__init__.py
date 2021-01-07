@@ -3,8 +3,6 @@ Modules for particular experiments and general functions.
 """
 
 
-import pandas as pd
-
 from physicslab.experiment import van_der_pauw
 from physicslab.experiment import hall
 
@@ -25,6 +23,8 @@ def process(measurements, by_module, **kwargs):
     :return: Collection of results labelled by :attr:`name`
     :rtype: pandas.DataFrame
     """
+    import pandas as pd
+
     output = pd.DataFrame(columns=by_module.PROCESS_COLUMNS)
     for name, data in measurements:
         series = by_module.process(data, **kwargs)
