@@ -7,14 +7,10 @@ Library
 Experiment subpackage
 ---------------------
 
-.. automodule:: physicslab.experiment
-   :members:
-
-**Submodules:**
-
 .. toctree::
    :maxdepth: 4
 
+   experiment/main
    experiment/van_der_pauw
    experiment/hall
 

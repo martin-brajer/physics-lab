@@ -1,5 +1,5 @@
 """
-Modules for particular experiments.
+Modules for particular experiments and general functions.
 """
 
 
@@ -16,7 +16,7 @@ def process(measurements, by_module, **kwargs):
     :param measurements: List of pairs ``(name, data)``. The latter one
         is passed to appropriate *process* method
     :type measurements: list(tuple)
-    :param by_module: By which module should the :attr:`measurements` be
+    :param by_module: Module by which the :attr:`measurements` should be
         processed
     :type by_module: :mod:`experiment` submodule
     :return: Collection of results labelled by :attr:`name`
