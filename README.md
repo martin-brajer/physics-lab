@@ -14,6 +14,7 @@ Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io
 
 * Van der Pauw & Hall method
 * Batch measurement evaluation
+* Using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/dev/reference/frame.html)
 
 
 # Installation

@@ -22,6 +22,7 @@ Features
 
 * Van der Pauw & Hall method
 * Batch measurement evaluation
+* Using `pandas.DataFrame <https://pandas.pydata.org/pandas-docs/dev/reference/frame.html>`_
 
 
 Installation
