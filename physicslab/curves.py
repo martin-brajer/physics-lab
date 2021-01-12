@@ -10,8 +10,9 @@ import numpy as np
 def gaussian_curve(amplitude, variance, expectedValue, zero):
     """ Create gauss curve function of given parameters.
 
-    :param float amplitude: Amplitude
-    :param float variance: Width (kind of)
+    :param float amplitude: Amplitude (value at maximum relative to
+        the baseline)
+    :param float variance: Variance (not FWHM)
     :param float expectedValue: Center
     :param float zero: Baseline
     :return: Gaussian curve as a function of one free variable
@@ -19,6 +20,58 @@ def gaussian_curve(amplitude, variance, expectedValue, zero):
     """
     return lambda x: amplitude * np.exp(
         -((x - expectedValue)**2) / (2 * variance**2)) + zero
+
+
+def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
+                               rising_branch=True):
+    """ One branch of magnetic hysteresis loop.
+
+    :param H: external magnetic field strength.
+    :type H: numpy.ndarray
+    :param saturation: :math:`max(B)`
+    :type saturation: float
+    :param remanence: :math:`B(H=0)`
+    :type remanence: float
+    :param coercivity: :math:`H(B=0)`
+    :type coercivity: float
+    :param rising_branch: Rising (True) or falling (False) branch,
+        defaults to True
+    :type rising_branch: bool, optional
+    :return: Resulting magnetic field induction :math:`B`
+    :rtype: numpy.ndarray
+    """
+    const = np.arctanh(remanence / saturation) / coercivity
+    coercivity_sign = -1 if rising_branch else 1
+
+    B = saturation * np.tanh(const * (H - (coercivity_sign * coercivity)))
+    return B
+
+
+def magnetic_hysteresis_loop(H, saturation, remanence, coercivity):
+    """ Magnetic hysteresis loop.
+
+    If more control is needed, use :func:`magnetic_hysteresis_branch`.
+
+    :param H: external magnetic field strength. The array is split in half
+        for individual branches.
+    :type H: numpy.ndarray
+    :param saturation: :math:`max(B)`
+    :type saturation: float
+    :param remanence: :math:`B(H=0)`
+    :type remanence: float
+    :param coercivity: :math:`H(B=0)`
+    :type coercivity: float
+    :return: Resulting magnetic field induction :math:`B`
+    :rtype: numpy.ndarray
+    """
+    H_rising, H_falling = np.array_split(H, 2)
+
+    B_rising = magnetic_hysteresis_branch(
+        H_rising, saturation, remanence, coercivity, rising_branch=True)
+    B_falling = magnetic_hysteresis_branch(
+        H_falling, saturation, remanence, coercivity, rising_branch=False)
+
+    return np.append(B_rising, B_falling)
 
 
 class Line():
