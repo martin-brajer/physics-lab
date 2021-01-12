@@ -75,7 +75,7 @@ class Measurement:
     CURRENT = 'I'
 
     def __init__(self, data):
-        if all(column in Measurement.get_columns() for column in data.columns):
+        if all(column in data.columns for column in Measurement.get_columns()):
             self.data = data
         else:
             raise AttributeError(

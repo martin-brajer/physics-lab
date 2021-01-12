@@ -148,7 +148,8 @@ class Measurement:
     RESISTANCE = 'Resistance'
 
     def __init__(self, data):
-        if self.GEOMETRY in data.columns:
+        if all(column in data.columns for column in Measurement.get_columns(
+                voltage_current=False, resistance=False)):
             self.data = data
         else:
             raise AttributeError('Parameter :attr:`data` must at least include'
