@@ -46,10 +46,15 @@ def process(data, thickness=None, sheet_resistance=None):
     (sheet_density, conductivity_type, residual
      ) = measurement.solve_for_sheet_density(full=True)
 
-    concentration = np.nan if thickness is None \
-        else carrier_concentration(sheet_density, thickness)
-    mobility = np.nan if sheet_resistance is None \
-        else Mobility.from_sheets(sheet_density, sheet_resistance)
+    if thickness is None:
+        concentration = np.nan
+    else:
+        concentration = carrier_concentration(sheet_density, thickness)
+
+    if sheet_resistance is None:
+        mobility = np.nan
+    else:
+        mobility = Mobility.from_sheets(sheet_density, sheet_resistance)
 
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
