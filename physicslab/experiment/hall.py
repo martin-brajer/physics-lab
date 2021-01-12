@@ -93,7 +93,7 @@ class Measurement:
 
     def is_valid(self):
         # Is hall measurement linear enough?
-        return True
+        raise NotImplementedError()
 
     @staticmethod
     def _conductivity_type(hall_voltage):

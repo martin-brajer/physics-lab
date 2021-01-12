@@ -13,7 +13,6 @@ def read_ods(filename, sheet_num, skip_rows=0, autoheader=True, dropna=True):
     """ Return a sheet data from an ods file as pandas.DataFrames.
 
     Assume the header is on the first row following the skipped ones.
-    ! cell.value can return numbers !
 
     :param filename: String path
     :type filename: str
