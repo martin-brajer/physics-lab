@@ -13,6 +13,7 @@ Experiment subpackage
    experiment/main
    experiment/van_der_pauw
    experiment/hall
+   experiment/magnetization
 
 Modules
 -------
