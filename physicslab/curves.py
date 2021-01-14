@@ -37,19 +37,19 @@ def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
     :param rising_branch: Rising (True) or falling (False) branch,
         defaults to True
     :type rising_branch: bool, optional
-    :raises ValueError: If saturation is not positive
-    :raises ValueError: If remanence is not positive
-    :raises ValueError: If coercivity is not positive
+    :raises ValueError: If saturation is negative or zero
+    :raises ValueError: If remanence is negative
+    :raises ValueError: If coercivity is negative
     :raises ValueError: If remanence is greater than saturation
     :return: Resulting magnetic field induction :math:`B`
     :rtype: numpy.ndarray
     """
     if saturation <= 0:
         raise ValueError('Saturation must be positive.')
-    if remanence <= 0:
-        raise ValueError('Remanence must be positive.')
-    if coercivity <= 0:
-        raise ValueError('Coercivity must be positive.')
+    if remanence < 0:
+        raise ValueError('Remanence must be positive or zero.')
+    if coercivity < 0:
+        raise ValueError('Coercivity must be positive or zero.')
     if remanence >= saturation:
         raise ValueError('Remanence must be less than saturation.')
 
