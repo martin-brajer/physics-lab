@@ -18,7 +18,7 @@ def read_ods(filename, sheet_num, skip_rows=0, autoheader=True, dropna=True):
     :type filename: str
     :param sheet_num: Number of the sheet to load. Start with zero
     :type sheet_num: int
-    :param skip_rows: Skip some top rows, defaults to 0
+    :param skip_rows: Skip several top rows, defaults to 0
     :type skip_rows: int, optional
     :param autoheader: Inferred the column names from the first line of
         the data, defaults to True
