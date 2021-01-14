@@ -118,7 +118,7 @@ class Measurement:
             self.data[self.Columns.MAGNETICFIELD],
             1, full=True)
         slope = coefficients_full[0][1]  # Constant can be found at [0][0].
-        residual = coefficients_full[1][0]
+        residual = coefficients_full[1][0][0]
 
         signed_sheet_density = slope / -elementary_charge
         if full:
