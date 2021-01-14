@@ -37,14 +37,24 @@ def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
     :param rising_branch: Rising (True) or falling (False) branch,
         defaults to True
     :type rising_branch: bool, optional
+    :raises ValueError: If saturation is not positive
+    :raises ValueError: If remanence is not positive
+    :raises ValueError: If coercivity is not positive
     :raises ValueError: If remanence is greater than saturation
     :return: Resulting magnetic field induction :math:`B`
     :rtype: numpy.ndarray
     """
-    if remanence > saturation:
-        raise ValueError('Remanence must be less or equal to saturation.')
+    if saturation <= 0:
+        raise ValueError('Saturation must be positive.')
+    if remanence <= 0:
+        raise ValueError('Remanence must be positive.')
+    if coercivity <= 0:
+        raise ValueError('Coercivity must be positive.')
+    if remanence >= saturation:
+        raise ValueError('Remanence must be less than saturation.')
+
     const = np.arctanh(remanence / saturation) / coercivity
-    coercivity_sign = -1 if rising_branch else 1
+    coercivity_sign = 1 if rising_branch else -1
 
     B = saturation * np.tanh(const * (H - (coercivity_sign * coercivity)))
     return B
@@ -54,6 +64,8 @@ def magnetic_hysteresis_loop(H, saturation, remanence, coercivity):
     """ Magnetic hysteresis loop.
 
     If more control is needed, use :func:`magnetic_hysteresis_branch`.
+    To check whether the data starts with rising or falling part,
+    first and middle element are compared.
 
     :param H: external magnetic field strength. The array is split in half
         for individual branches.
@@ -67,13 +79,20 @@ def magnetic_hysteresis_loop(H, saturation, remanence, coercivity):
     :return: Resulting magnetic field induction :math:`B`
     :rtype: numpy.ndarray
     """
+    # Starting high => falling first.
+    falling_first = H[0] > H[int(len(H) / 2)]
+
     H_rising, H_falling = np.array_split(H, 2)
+    if falling_first:
+        H_falling, H_rising = H_rising, H_falling
 
     B_rising = magnetic_hysteresis_branch(
         H_rising, saturation, remanence, coercivity, rising_branch=True)
     B_falling = magnetic_hysteresis_branch(
         H_falling, saturation, remanence, coercivity, rising_branch=False)
 
+    if falling_first:
+        B_falling, B_rising = B_rising, B_falling
     return np.append(B_rising, B_falling)
 
 
