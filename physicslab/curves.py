@@ -37,9 +37,12 @@ def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
     :param rising_branch: Rising (True) or falling (False) branch,
         defaults to True
     :type rising_branch: bool, optional
+    :raises ValueError: If remanence is greater than saturation
     :return: Resulting magnetic field induction :math:`B`
     :rtype: numpy.ndarray
     """
+    if remanence > saturation:
+        raise ValueError('Remanence must be less or equal to saturation.')
     const = np.arctanh(remanence / saturation) / coercivity
     coercivity_sign = -1 if rising_branch else 1
 
