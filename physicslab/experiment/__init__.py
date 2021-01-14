@@ -5,7 +5,7 @@ Modules for particular experiments and general functions.
 
 from physicslab.experiment import van_der_pauw
 from physicslab.experiment import hall
-from physicslab.experiment import magnetization
+from physicslab.experiment import magnetism_type
 
 
 def process(measurements, by_module, **kwargs):
