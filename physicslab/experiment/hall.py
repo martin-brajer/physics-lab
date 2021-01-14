@@ -65,36 +65,22 @@ def process(data, thickness=None, sheet_resistance=None):
 class Measurement:
     """ Hall measurement.
 
-    :param data: Voltage/current/magnetic field triples. See class
-        variables for default column names.
+    :param data: Voltage/current/magnetic field triples. See
+        :class:`Measurement.Columns` for default column names.
     :type data: pandas.DataFrame
-    :raises AttributeError: If :attr:`data` doesn't include
-        :meth:`get_columns` columns.
     """
 
-    #: :data:`data` magnetic field column name of type :class:`float`.
-    MAGNETICFIELD = 'B'
-    #: :data:`data` Hall voltage column name of type :class:`float`.
-    HALLVOLTAGE = 'VH'
-    #: :data:`data` current column name of type :class:`float`.
-    CURRENT = 'I'
+    class Columns:
+        """ :data:`data` column names. """
+        #:
+        MAGNETICFIELD = 'B'
+        #:
+        HALLVOLTAGE = 'VH'
+        #:
+        CURRENT = 'I'
 
     def __init__(self, data):
-        if all(column in data.columns for column in Measurement.get_columns()):
-            self.data = data
-        else:
-            raise AttributeError(
-                ':attr:`data` must include {} columns.'.format(
-                    self.get_columns()))
-
-    @classmethod
-    def get_columns(cls):
-        """ Columns of :data:`data`.
-
-        :return: List of names. Actual names are saved in class variables.
-        :rtype: list(str)
-        """
-        return [cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT]
+        self.data = data
 
     def is_valid(self):
         # Is hall measurement linear enough?
@@ -125,10 +111,13 @@ class Measurement:
         :rtype: tuple
         """
         self.data['hall_resistance'] = Resistance.from_ohms_law(
-            self.data['VH'], self.data['I'])
+            self.data[self.Columns.HALLVOLTAGE],
+            self.data[self.Columns.CURRENT])
         coefficients_full = np.polynomial.polynomial.polyfit(
-            self.data['hall_resistance'], self.data['B'], 1, full=True)
-        slope = coefficients_full[0][1]  # Constant is found at [0][0].
+            self.data['hall_resistance'],
+            self.data[self.Columns.MAGNETICFIELD],
+            1, full=True)
+        slope = coefficients_full[0][1]  # Constant can be found at [0][0].
         residual = coefficients_full[1][0]
 
         signed_sheet_density = slope / -elementary_charge

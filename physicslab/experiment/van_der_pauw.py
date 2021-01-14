@@ -124,7 +124,6 @@ class Solve:
         :return: Sheet resistance
         :rtype: float
         """
-        #: Find root of :meth:`implicit_formula` near :param:`Rs0`.
         return scipy_optimize_newton(
             Solve.implicit_formula, Rs0, args=(Rh, Rv), fprime=None)
 
@@ -133,54 +132,29 @@ class Measurement:
     """ Van der Pauw resistances measurements.
 
     :param data: Voltage/current pairs or resistances with respective
-        geometries. See class variables for default column names.
+        geometries. See :class:`Measurement.Columns` for default column names.
     :type data: pandas.DataFrame
-    :raises AttributeError: If :attr:`data` doesn't include
-        :data:`Measurement.GEOMETRY` column.
     """
-    #: :data:`data` geometry column name of type :class:`Geometry`.
-    GEOMETRY = 'Geometry'
-    #: :data:`data` voltage column name of type :class:`float`.
-    VOLTAGE = 'Voltage'
-    #: :data:`data` current column name of type :class:`float`.
-    CURRENT = 'Current'
-    #: :data:`data` resistance column name of type :class:`float`.
-    RESISTANCE = 'Resistance'
+
+    class Columns:
+        """ :data:`data` column names. """
+        #:
+        GEOMETRY = 'Geometry'
+        #:
+        VOLTAGE = 'Voltage'
+        #:
+        CURRENT = 'Current'
+        #:
+        RESISTANCE = 'Resistance'
 
     def __init__(self, data):
-        if all(column in data.columns for column in Measurement.get_columns(
-                voltage_current=False, resistance=False)):
-            self.data = data
-        else:
-            raise AttributeError('Parameter :attr:`data` must at least include'
-                                 ' the "{}" column.'.format(self.GEOMETRY))
-
-    @classmethod
-    def get_columns(cls, voltage_current=True, resistance=True):
-        """ Columns of :data:`data`.
-
-        Geometry column is always included.
-
-        :param voltage_current: Include voltage and current columns,
-            defaults to True
-        :type voltage_current: bool, optional
-        :param resistance: Include resistance column, defaults to True
-        :type resistance: bool, optional
-        :return: List of names. Actual names are saved in class variables.
-        :rtype: list(str)
-        """
-        output = [cls.GEOMETRY]
-        if voltage_current:
-            output.extend([cls.VOLTAGE, cls.CURRENT])
-        if resistance:
-            output.append(cls.RESISTANCE)
-        return output
+        self.data = data
 
     def find_resistances(self):
         """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
-        self.data.loc[:, self.RESISTANCE] = (
-            Resistance.from_ohms_law(
-                self.data[self.VOLTAGE], self.data[self.CURRENT])
+        self.data.loc[:, self.Columns.RESISTANCE] = Resistance.from_ohms_law(
+            self.data[self.Columns.VOLTAGE],
+            self.data[self.Columns.CURRENT]
         )
 
     def group_and_average(self):
@@ -190,14 +164,15 @@ class Measurement:
         :return: Horizontal and vertical sheet resistances
         :rtype: tuple(float, float)
         """
-        self.data.loc[:, self.GEOMETRY] = self.data[self.GEOMETRY].apply(
-            Geometry.classify)
+        self.data.loc[:, self.Columns.GEOMETRY] = (
+            self.data[self.Columns.GEOMETRY].apply(Geometry.classify))
         group = {
             Geometry.RHorizontal: [],
             Geometry.RVertical: [],
         }
         for i, row in self.data.iterrows():
-            group[row[self.GEOMETRY]].append(row[self.RESISTANCE])
+            group[row[self.Columns.GEOMETRY]].append(
+                row[self.Columns.RESISTANCE])
         Rh = np.average(group[Geometry.RHorizontal])
         Rv = np.average(group[Geometry.RVertical])
         return Rh, Rv

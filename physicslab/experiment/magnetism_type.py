@@ -71,8 +71,6 @@ class Measurement():
         MAGNETICFIELD = 'B'
         #:
         MAGNETIZATION = 'M'
-        #:
-        TEMPERATURE = 'T'
 
     #: :data:`data` residue column name suffix.
     RESIDUE_SUFFIX = '_residue'
