@@ -21,7 +21,9 @@ def process(measurements, by_module, **kwargs):
     :param by_module: Module by which the :attr:`measurements` should be
         processed
     :type by_module: :mod:`experiment` submodule
-    :return: Collection of results labelled by :attr:`name`
+    :param kwargs: Additional keyword arguments are forwarded to
+        :meth:`by_module.process` method
+    :return: Collection of results indexed by ``name``
     :rtype: pandas.DataFrame
     """
     import pandas as pd
