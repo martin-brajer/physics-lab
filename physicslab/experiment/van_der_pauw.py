@@ -19,7 +19,7 @@ from physicslab.electricity import Resistivity, Resistance
 #: Column names used in :meth:`process` function.
 PROCESS_COLUMNS = [
     'sheet_resistance',
-    'resistance_ratio',
+    'ratio_resistance',
     'sheet_conductance',
     'resistivity',
     'conductivity',
@@ -47,7 +47,7 @@ def process(data, thickness=None):
     measurement = Measurement(data)
     measurement.find_resistances()
     Rh, Rv = measurement.group_and_average()
-    sheet_resistance, resistance_ratio = (
+    sheet_resistance, ratio_resistance = (
         measurement.solve_for_sheet_resistance(Rh, Rv, full=True))
     sheet_conductance = 1 / sheet_resistance
 
@@ -59,7 +59,7 @@ def process(data, thickness=None):
         conductivity = sheet_conductance / thickness
 
     return pd.Series(
-        data=(sheet_resistance, resistance_ratio, sheet_conductance,
+        data=(sheet_resistance, ratio_resistance, sheet_conductance,
               resistivity, conductivity),
         index=PROCESS_COLUMNS)
 
@@ -219,12 +219,12 @@ class Measurement:
         Rs0 = Solve.square(Rh, Rv)
         sheet_resistance = Solve.universal(Rh, Rv, Rs0)
 
-        resistance_ratio = Rh / Rv
-        if resistance_ratio < 1:
-            resistance_ratio = 1 / resistance_ratio
+        ratio_resistance = Rh / Rv
+        if ratio_resistance < 1:
+            ratio_resistance = 1 / ratio_resistance
 
         if full:
-            return sheet_resistance, round(resistance_ratio, ndigits=1)
+            return sheet_resistance, ratio_resistance
         else:
             return sheet_resistance
 
