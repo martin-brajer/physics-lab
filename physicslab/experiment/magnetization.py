@@ -192,7 +192,7 @@ class Measurement():
         """
         magnetization_label = self._label(self.MAGNETIZATION, from_residual)
 
-        p0 = self._ferromagnetism_parmeter_guess(magnetization_label)
+        p0 = self._ferromagnetism_parameter_guess(magnetization_label)
         popt, pcov = scipy_optimize_curve_fit(
             f=magnetic_hysteresis_loop,
             xdata=self.data[self.MAGNETICFIELD],
@@ -216,11 +216,11 @@ class Measurement():
 
         return saturation, remanence, coercivity
 
-    def _ferromagnetism_parmeter_guess(self, magnetization_label):
+    def _ferromagnetism_parameter_guess(self, magnetization_label):
         magnetization = self.data[magnetization_label]
 
         saturation = (max(magnetization) - min(magnetization)) / 2
-        remanence = 2.2e-3
+        remanence = saturation / 2
         coercivity = 600
 
         return (saturation, remanence, coercivity)
