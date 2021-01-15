@@ -81,9 +81,10 @@ class Measurement():
         column = self.Columns.MAGNETIZATION
         self.data[column + self.RESIDUE_SUFFIX] = self.data[column].copy()
 
-    def diamagnetism(self, from_residual=False,
-                     fit_label='Diamagnetism', fit_array=None):
+    def diamagnetism(self, from_residual=False, fit_label='Diamagnetism'):
         """ Find diamagnetic component of overall magnetization.
+
+        Simulated data are subtracted from residue column.
 
         :param from_residual: Use residual data instead of the original data,
             defaults to False
@@ -91,9 +92,6 @@ class Measurement():
         :param fit_label: Simulated data (fit) will be added to a column
             of this name. :class:`None` to skip, defaults to 'Diamagnetism'
         :type fit_label: str, optional
-        :param fit_array: Simulate data in those points. None to use source
-            points, defaults to None
-        :type fit_array: numpy.ndarray, optional
         :return: Magnetic susceptibility and magnetization offset
         :rtype: tuple
         """
@@ -104,18 +102,14 @@ class Measurement():
                                         self.data[magnetization_label])
         offset, magnetic_susceptibility = coef
 
-        # Save fitted curve.
+        # Simulate data.
+        fit = np.polynomial.polynomial.polyval(
+            self.data[self.Columns.MAGNETICFIELD], coef)
         if fit_label is not None:
-            if fit_array is None:
-                fit_array = self.data[self.Columns.MAGNETICFIELD]
-            self.data[fit_label] = np.polynomial.polynomial.polyval(
-                fit_array, coef)
-
-        # Modify magnetization residue.
+            self.data[fit_label] = fit
         self._modify_residue(self.Columns.MAGNETIZATION,
                              original_data_label=magnetization_label,
-                             simulated_data=np.polynomial.polynomial.polyval(
-                                 self.data[self.Columns.MAGNETICFIELD], coef))
+                             simulated_data=fit)
 
         return magnetic_susceptibility, offset
 
@@ -147,9 +141,10 @@ class Measurement():
         return (popt_bottom + popt_top) / 2
 
     def ferromagnetism(self, from_residual=False,
-                       fit_label='Ferromagnetism', fit_array=None,
-                       p0=None):
+                       fit_label='Ferromagnetism', p0=None):
         """ Find ferromagnetic component of overall magnetization.
+
+        Simulated data are subtracted from residue column.
 
         :param from_residual: Use residual data instead of the original data,
             defaults to False
@@ -157,9 +152,6 @@ class Measurement():
         :param fit_label: Simulated data (fit) will be added to a column
             of this name. :class:`None` to skip, defaults to 'Ferromagnetism'
         :type fit_label: str, optional
-        :param fit_array: Simulate data in those points. None to use source
-            points, defaults to None
-        :type fit_array: numpy.ndarray, optional
         :return: Saturation, remanence and coercivity
         :rtype: tuple
         """
@@ -176,17 +168,14 @@ class Measurement():
         )
         saturation, remanence, coercivity = popt
 
-        # Save fitted curve.
+        # Simulate data.
+        fit = magnetic_hysteresis_loop(
+            self.data[self.Columns.MAGNETICFIELD], *popt)
         if fit_label is not None:
-            if fit_array is None:
-                fit_array = self.data[self.Columns.MAGNETICFIELD]
-            self.data[fit_label] = magnetic_hysteresis_loop(fit_array, *popt)
-
-        # Modify magnetization residue.
+            self.data[fit_label] = fit
         self._modify_residue(self.Columns.MAGNETIZATION,
                              original_data_label=magnetization_label,
-                             simulated_data=magnetic_hysteresis_loop(
-                                 self.data[self.Columns.MAGNETICFIELD], *popt))
+                             simulated_data=fit)
 
         return saturation, remanence, coercivity
 
