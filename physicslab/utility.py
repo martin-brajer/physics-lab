@@ -13,10 +13,10 @@ def permutation_sign(array):
     .. note::
         For permutation relative to another ordering, use the
         following identity:
-        :math:`sgn(\\pi_1 \\circ \\pi_2) = sgn(\\pi_1)\\;sgn(\\pi_2)`
+        :math:`sgn(\\pi_1 \\circ \\pi_2) = sgn(\\pi_1)\\cdot sgn(\\pi_2)`
 
-    :param array: Input array.
-    :type array: list or :mod:`numpy.array`
+    :param array: Input array (iterable)
+    :type array: list
     :return: Permutation parity sign is either (+1) or (-1)
     :rtype: int
     """
