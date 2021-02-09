@@ -6,7 +6,7 @@ Main
 
 .. code:: python
 
-   ### Example: Van der pauw
+   ### Example: Van der Pauw
    import panda as pd
 
    def load(filename):
