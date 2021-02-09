@@ -12,25 +12,22 @@ def process(measurements, by_module, **kwargs):
     """ Genereal process function calling appropriate *process* function
     from selected :mod:`experiment` module.
 
-    If you want to use simple list of measurements, wrap :attr:`measurements`
-    argument in :func:`enumerate` method.
-
-    :param measurements: List of pairs ``(name, data)``. The latter one
-        is passed to appropriate *process* method
-    :type measurements: list(tuple)
-    :param by_module: Module by which the :attr:`measurements` should be
-        processed
+    :param measurements: List of measurements, which are passed to
+        appropriate *process* method
+    :type measurements: list(pandas.Dataframe)
+    :param by_module: Submodule of :mod:`experiment` by which the individual
+        measurements are to be processed
     :type by_module: :mod:`experiment` submodule
     :param kwargs: Additional keyword arguments are forwarded to
         :meth:`by_module.process` method
-    :return: Collection of results indexed by ``name``
+    :return: Collection of results indexed by measurement's :attr:`name`
     :rtype: pandas.DataFrame
     """
     import pandas as pd
 
     output = pd.DataFrame(columns=by_module.PROCESS_COLUMNS)
-    for name, data in measurements:
-        series = by_module.process(data, **kwargs)
-        series.name = name
+    for i, measurement in enumerate(measurements):
+        series = by_module.process(measurement, **kwargs)
+        series.name = measurement.name if hasattr(measurement, 'name') else i
         output = output.append(series)
     return output
