@@ -1,2 +1,2 @@
 # .github/workflows/requirements.txt (testing)
--r ..\..\requirements.txt
+-r ../../requirements.txt
