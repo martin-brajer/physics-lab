@@ -14,7 +14,7 @@ def process(measurements, by_module, **kwargs):
 
     :param measurements: List of measurements, which are passed to
         appropriate *process* method
-    :type measurements: list(pandas.Dataframe)
+    :type measurements: list(pandas.DataFrame)
     :param by_module: Submodule of :mod:`experiment` by which the individual
         measurements are to be processed
     :type by_module: :mod:`experiment` submodule
