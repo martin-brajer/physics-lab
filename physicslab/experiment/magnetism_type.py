@@ -8,11 +8,9 @@ Magnetization measurement.
 import numpy as np
 import pandas as pd
 
-from scipy.optimize import newton as scipy_optimize_newton
 from scipy.optimize import curve_fit as scipy_optimize_curve_fit
 
 from physicslab.curves import magnetic_hysteresis_loop
-from physicslab.electricity import carrier_concentration, Mobility, Resistance
 
 
 #: Column names used in :meth:`process` function.
