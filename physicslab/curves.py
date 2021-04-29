@@ -7,19 +7,19 @@ Curves
 import numpy as np
 
 
-def gaussian_curve(amplitude, variance, expectedValue, zero):
+def gaussian_curve(amplitude, variance, expected_value, zero):
     """ Create gauss curve function of given parameters.
 
     :param float amplitude: Amplitude (value at maximum relative to
         the baseline)
     :param float variance: Variance (not FWHM)
-    :param float expectedValue: Center
+    :param float expected_value: Center
     :param float zero: Baseline
     :return: Gaussian curve as a function of one free variable
     :rtype: function(:class:`numpy.ndarray`)
     """
     return lambda x: amplitude * np.exp(
-        -((x - expectedValue)**2) / (2 * variance**2)) + zero
+        -((x - expected_value)**2) / (2 * variance**2)) + zero
 
 
 def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,

@@ -235,7 +235,8 @@ class Geometry(enum.Enum):
         if len(self.value) == 2:
             return self
 
-        new_value = ''.join(
+        # len(self.value) == 4
+        new_value = ''.join(  # self.value[pairs][reverse order]
             [self.value[i:i+2][::-1] for i in range(0, len(self.value), 2)]
         )
         return Geometry(new_value)
