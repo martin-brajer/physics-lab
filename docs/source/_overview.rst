@@ -33,10 +33,7 @@ Installation
    
    pip install physicslab
 
-
-How to use this package
------------------------
-
+For usage examples see :ref:`get-started-label` section.
 
 
 Compliance
@@ -45,6 +42,7 @@ Compliance
 | Versioning follows `Semantic Versioning 2.0.0 <https://semver.org/>`_.
 | Following `PEP8 Style Guide <https://www.python.org/dev/peps/pep-0008/>`_ coding conventions.
 | Testing with :mod:`unittest` and `pycodestyle <https://pypi.org/project/pycodestyle/>`_.
+| Using `Python 3 <https://www.python.org/>`_ (version >= 3.6).
 
 
 License

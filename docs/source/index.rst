@@ -13,6 +13,7 @@ Welcome to Physics Lab's documentation!
    :caption: Contents:
 
    physicslab_overview
+   get_started
    modules/modules
 
 

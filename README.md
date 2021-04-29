@@ -24,8 +24,7 @@ Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io
 pip install physicslab
 ```
 
-
-# How to use this package
+For usage examples see [Get started](https://physics-lab.readthedocs.io/en/latest/get_started.html) section.
 
 
 # Compliance
@@ -33,7 +32,8 @@ pip install physicslab
 Versioning follows [Semantic Versioning 2.0.0](https://semver.org/). \
 Following [PEP8 Style Guide](https://www.python.org/dev/peps/pep-0008/) coding conventions. \
 Testing with [unittest](https://docs.python.org/2.7/library/unittest.html#module-unittest)
-and [pycodestyle](https://pypi.org/project/pycodestyle/).
+and [pycodestyle](https://pypi.org/project/pycodestyle/). \
+Using [Python 3](https://www.python.org/) (version >= 3.6).
 
 
 # License
