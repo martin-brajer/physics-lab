@@ -64,8 +64,8 @@ Magnetism type
 
 .. code:: python
 
-   output = physicslab.experiment.magnetism_type.process(measurement)
-   print(output)
+   results = physicslab.experiment.magnetism_type.process(measurement)
+   print(results)
 
    col = physicslab.experiment.magnetism_type.Measurement.Columns
    B = measurement[col.MAGNETICFIELD]
