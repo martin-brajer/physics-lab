@@ -50,13 +50,31 @@ Handling Geometry enum.
    def get_geometry(orientation, direct):
       """ 
       :param int orientation: Contacts rotation in multiples of 90°.
-      :param bool direct: Contacts counter-clockwise (``true``) or not.
+      :param bool direct: Contacts counter-clockwise (True) or not.
       """
       geometry = van_der_pauw.Geometry.R1234  # Default configuration.
       geometry = geometry.shift(number=int(orientation))
       if not direct:
          geometry = geometry.reverse_polarity()
       return geometry
+
+
+Magnetism type
+--------------
+
+.. code:: python
+
+   output = physicslab.experiment.magnetism_type.process(measurement)
+   print(output)
+
+   col = physicslab.experiment.magnetism_type.Measurement.Columns
+   B = measurement[col.MAGNETICFIELD]
+   plt.plot(B, measurement[col.MAGNETIZATION], 'ko')  # Original data.
+   plt.plot(B, measurement[col.DIAMAGNETISM], 'r-')  # Separated DIA contribution.
+   plt.plot(B, measurement[col.FERROMAGNETISM], 'b-')  # Separated FM contribution.
+   plt.plot(B, measurement[col.RESIDUAL_MAGNETIZATION], 'g-')  # Residual (unseparated) data.
+   plt.show()
+
 
 Line
 ----
