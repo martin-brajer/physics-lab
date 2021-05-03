@@ -8,7 +8,7 @@ Use cases.
 Experiment subpackage
 ---------------------
 
-You can either use subpackages directly (`physicslab.experiment.van_der_pauw`)
+You can either use subpackages directly (``physicslab.experiment.van_der_pauw``)
 or utilize the following batch function.
 
 .. code:: python
@@ -44,3 +44,28 @@ Van der Pauw
 ------------
 
 Handling Geometry enum.
+
+.. code:: python
+
+   def get_geometry(orientation, direct):
+      """ 
+      :param int orientation: Contacts rotation in multiples of 90°.
+      :param bool direct: Contacts counter-clockwise (``true``) or not.
+      """
+      geometry = van_der_pauw.Geometry.R1234  # Default configuration.
+      geometry = geometry.shift(number=int(orientation))
+      if not direct:
+         geometry = geometry.reverse_polarity()
+      return geometry
+
+Line
+----
+
+.. code:: python
+
+   line1 = Line(3, -2)  # Line: y = 3 - 2x
+   line2 = Line(slope=2)  # Line: y = 0 + 2x
+   line1(4.3)  # -5.6
+   line1 - 5.3 + 2.4 * line2  # Line: y = -2.3 + 2.8x
+   line1.zero()  # 1.5
+   Line.Intersection(line1, line2)  # (0.75, 1.5)

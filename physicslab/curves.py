@@ -7,33 +7,33 @@ Curves
 import numpy as np
 
 
-def gaussian_curve(amplitude, variance, expected_value, zero):
-    """ Create gauss curve function of given parameters.
+def gaussian_curve(x, expected_value, amplitude, variance, zero=0):
+    """ Gauss curve function of given parameters.
 
     :param float amplitude: Amplitude (value at maximum relative to
         the baseline)
     :param float variance: Variance (not FWHM)
     :param float expected_value: Center
     :param float zero: Baseline
-    :return: Gaussian curve as a function of one free variable
-    :rtype: function(:class:`numpy.ndarray`)
+    :return: Gaussian curve values
+    :rtype: numpy.ndarray
     """
-    return lambda x: amplitude * np.exp(
+    return amplitude * np.exp(
         -((x - expected_value)**2) / (2 * variance**2)) + zero
+
+
+def gaussian_curve_FWHM(variance):
+    return 2 * np.sqrt(2 * np.ln(2)) * variance
 
 
 def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
                                rising_branch=True):
     """ One branch of magnetic hysteresis loop.
 
-    :param H: external magnetic field strength.
-    :type H: numpy.ndarray
-    :param saturation: :math:`max(B)`
-    :type saturation: float
-    :param remanence: :math:`B(H=0)`
-    :type remanence: float
-    :param coercivity: :math:`H(B=0)`
-    :type coercivity: float
+    :param numpy.ndarray H: external magnetic field strength.
+    :param float saturation: :math:`max(B)`
+    :param float remanence: :math:`B(H=0)`
+    :param float coercivity: :math:`H(B=0)`
     :param rising_branch: Rising (True) or falling (False) branch,
         defaults to True
     :type rising_branch: bool, optional
@@ -67,15 +67,11 @@ def magnetic_hysteresis_loop(H, saturation, remanence, coercivity):
     To check whether the data starts with rising or falling part,
     first and middle element are compared.
 
-    :param H: external magnetic field strength. The array is split in half
-        for individual branches.
-    :type H: numpy.ndarray
-    :param saturation: :math:`max(B)`
-    :type saturation: float
-    :param remanence: :math:`B(H=0)`
-    :type remanence: float
-    :param coercivity: :math:`H(B=0)`
-    :type coercivity: float
+    :param numpy.ndarray H: external magnetic field strength. The array
+        is split in half for individual branches.
+    :param float saturation: :math:`max(B)`
+    :param float remanence: :math:`B(H=0)`
+    :param float coercivity: :math:`H(B=0)`
     :return: Resulting magnetic field induction :math:`B`
     :rtype: numpy.ndarray
     """
@@ -99,6 +95,9 @@ def magnetic_hysteresis_loop(H, saturation, remanence, coercivity):
 class Line():
     """ Represents a line function: :math:`y=a_0+a_1x`.
 
+    Call the instance to enumerate it at the given `x`.
+    You can do arithmetic with :class:`Line`, find zeros, etc.
+
     :param constant: Constant term (:math:`a_0`), defaults to 0
     :type constant: int, optional
     :param slope: Linear term (:math:`a_1`), defaults to 0
@@ -109,42 +108,50 @@ class Line():
         self.constant = constant
         self.slope = slope
 
+    def __call__(self, x):
+        """ Find function values of self.
+
+        :param numpy.ndarray x: Free variable
+        :return: Function value
+        :rtype: numpy.ndarray
+        """
+        return self.slope * x + self.constant
+
+    def zero(self):
+        """ Find free variable (`x`) value which evaluates to zero.
+
+        :raises ValueError: If slope is zero.
+        """
+        if self.slope == 0:
+            raise ValueError('Constant function cannot be inverted.')
+        return -self.constant / self.slope
+
+    def root(self):
+        """ Alias for :meth:`zero`. """
+        return self.zero()
+
     def invert(self):
         """ Return inverse function of self.
 
         :return: Inverted function
-        :rtype: :class:`Line`
+        :rtype: Line
         """
         return Line(
-            constant=-self.constant / self.slope,
+            constant=self.zero(),  # Raises error if self.slope == 0.
             slope=1 / self.slope
         )
 
     @staticmethod
     def Intersection(line1, line2):
-        """ Return coordinates of intersection point of
-        the two :class:`Line` instances.
+        """ Find intersection coordinates of the two given :class:`Line`.
 
-        :param line1: First line
-        :type line1: :class:`Line`
-        :param line2: Second line
-        :type line2: :class:`Line`
+        :param Line line1: First line
+        :param Line line2: Second line
         :return: Coordinates of the intersection of the two lines
         :rtype: tuple
         """
-        x = ((line1.constant - line2.constant)
-             / (line2.slope - line1.slope))
+        x = (line1 - line2).zero()
         return (x, line1(x))
-
-    def __call__(self, x):
-        """ Find function values of self.
-
-        :param x: Free variable
-        :type x: :class:`numpy.ndarray`
-        :return: Function value
-        :rtype: :class:`numpy.ndarray`
-        """
-        return self.slope * x + self.constant
 
     def __add__(self, value):
         if isinstance(value, Line):
