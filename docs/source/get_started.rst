@@ -53,7 +53,7 @@ Handling Geometry enum.
       :param bool direct: Contacts counter-clockwise (True) or not.
       """
       geometry = van_der_pauw.Geometry.R1234  # Default configuration.
-      geometry = geometry.shift(number=int(orientation))
+      geometry = geometry.shift(number=orientation)
       if not direct:
          geometry = geometry.reverse_polarity()
       return geometry
