@@ -48,7 +48,7 @@ def process(data, thickness=None):
     measurement.find_resistances()
     Rh, Rv = measurement.group_and_average()
     sheet_resistance, ratio_resistance = (
-        measurement.solve_for_sheet_resistance(Rh, Rv, full=True))
+        measurement.solve_for_sheet_resistance(Rh, Rv))
     sheet_conductance = 1 / sheet_resistance
 
     if thickness is None:
@@ -177,19 +177,18 @@ class Measurement:
         Rv = np.average(group[Geometry.RVertical])
         return Rh, Rv
 
-    def solve_for_sheet_resistance(self, Rh, Rv, full=False):
+    def solve_for_sheet_resistance(self, Rh, Rv):
         """ Solve :meth:`Solve.implicit_formula` to find sample's
         sheet resistance. Also compute resistance symmetry ratio (always
         greater than one). The ratio shows how squarish the sample is,
-        quality of ohmic contacts (small, symmetric, ...), etc.
+        quality of ohmic contacts (small, symmetric etc.).
 
         :param Rh: Horizontal resistance
         :type Rh: float
         :param Rv: Vertical resistance
         :type Rv: float
-        :return: Sheet resistance. If :attr:`full` is ``True``, return
-            tuple of sheet resistance and symmetry ratio
-        :rtype: float or tuple(float, float)
+        :return: Sheet resistance and symmetry ratio
+        :rtype: tuple(float, float)
         """
         Rs0 = Solve.square(Rh, Rv)
         sheet_resistance = Solve.universal(Rh, Rv, Rs0)
@@ -198,10 +197,7 @@ class Measurement:
         if ratio_resistance < 1:
             ratio_resistance = 1 / ratio_resistance
 
-        if full:
-            return sheet_resistance, ratio_resistance
-        else:
-            return sheet_resistance
+        return sheet_resistance, ratio_resistance
 
 
 class Geometry(enum.Enum):
