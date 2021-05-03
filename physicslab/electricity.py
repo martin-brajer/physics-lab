@@ -41,10 +41,8 @@ class Resistance:
     def from_ohms_law(voltage, current):
         """Find resistivity from sheet resistance.
 
-        :param voltage: (volt)
-        :type voltage: float
-        :param current: (ampere)
-        :type current: float
+        :param float voltage: (volt)
+        :param float current: (ampere)
         :return: (ohm)
         :rtype: float
         """
@@ -54,12 +52,9 @@ class Resistance:
     def from_resistivity(resistivity,  cross_sectional_area, length):
         """ Find resistivity from resistance.
 
-        :param resistance: (ohm)
-        :type resistance: float
-        :param cross_sectional_area: (meter squared)
-        :type cross_sectional_area: float
-        :param length: (meter)
-        :type length: float
+        :param float resistance: (ohm)
+        :param float cross_sectional_area: (meter squared)
+        :param float length: (meter)
         :return: (ohm-metre)
         :rtype: float
         """
@@ -85,10 +80,8 @@ class Resistivity:
     def from_sheet_resistance(sheet_resistance, thickness):
         """Find resistivity from sheet resistance.
 
-        :param sheet_resistance: (ohms per square)
-        :type sheet_resistance: float
-        :param thickness: (meter)
-        :type thickness: float
+        :param float sheet_resistance: (ohms per square)
+        :param float thickness: (meter)
         :return: (ohm-metre)
         :rtype: float
         """
@@ -98,12 +91,9 @@ class Resistivity:
     def from_resistance(resistance,  cross_sectional_area, length):
         """ Find resistivity from resistance.
 
-        :param resistance: (ohm)
-        :type resistance: float
-        :param cross_sectional_area: (meter squared)
-        :type cross_sectional_area: float
-        :param length: (meter)
-        :type length: float
+        :param float resistance: (ohm)
+        :param float cross_sectional_area: (meter squared)
+        :param float length: (meter)
         :return: (ohm-metre)
         :rtype: float
         """
