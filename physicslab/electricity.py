@@ -67,7 +67,16 @@ class Sheet_Resistance:
     #: SI unit.
     UNIT = 'ohms per square'
 
-    pass
+    @staticmethod
+    def from_resistivity(resistivity, thickness):
+        """Find sheet resistance from resistivity.
+
+        :param float resistivity: (ohm-meter)
+        :param float thickness: (meter)
+        :return: (ohms per square)
+        :rtype: float
+        """
+        return resistivity / thickness
 
 
 class Resistivity:
