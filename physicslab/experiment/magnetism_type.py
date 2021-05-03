@@ -41,8 +41,9 @@ def process(data):
         from_residual=True)
     saturation, remanence, coercivity = measurement.ferromagnetism(
         from_residual=True)
-    ratio_DM_FM = abs(measurement.data['Diamagnetism'].iloc[-1]
-                      / measurement.data['Ferromagnetism'].iloc[-1])
+    ratio_DM_FM = abs(
+        measurement.data[Measurement.Columns.DIAMAGNETISM].iloc[-1]
+        / measurement.data[Measurement.Columns.FERROMAGNETISM].iloc[-1])
 
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
@@ -53,9 +54,8 @@ def process(data):
 class Measurement():
     """ Magnetization measurement.
 
-    Copy magnetization column, so individual magnetic effects can be
-    subtracted. Suffix :data:`RESIDUE_SUFFIX` will be added to names of
-    copied columns.
+    Copy magnetization column as :data:`Columns.RESIDUAL_MAGNETIZATION`,
+    so individual magnetic effects can be subtracted.
 
     :param pandas.DataFrame data: Magnetic field, magnetization and temperature
         data. See :class:`Measurement.Columns` for default column names.
@@ -67,17 +67,24 @@ class Measurement():
         MAGNETICFIELD = 'B'
         #:
         MAGNETIZATION = 'M'
-
-    #: :data:`data` residue column name suffix.
-    RESIDUE_SUFFIX = '_residue'
+        #: :data:`data` residue column name suffix.
+        RESIDUAL_MAGNETIZATION = 'M_residual'
+        #:
+        FERROMAGNETISM = 'Ferromagnetism'
+        #: Simulated data (fit).
+        DIAMAGNETISM = 'Diamagnetism'
 
     def __init__(self, data):
         self.data = data
+        self.reset_residue()
 
-        column = self.Columns.MAGNETIZATION
-        self.data[column + self.RESIDUE_SUFFIX] = self.data[column].copy()
+    def reset_residue(self):
+        """ Place a copy :data:`Columns.MAGNETIZATION` to
+        :data:`Columns.RESIDUAL_MAGNETIZATION` column of :data:`data`. """
+        self.data[self.Columns.RESIDUAL_MAGNETIZATION] = \
+            self.data[self.Columns.MAGNETIZATION].copy()
 
-    def diamagnetism(self, from_residual=False, fit_label='Diamagnetism'):
+    def diamagnetism(self, from_residual=False):
         """ Find diamagnetic component of overall magnetization.
 
         Simulated data are subtracted from residue column.
@@ -85,15 +92,12 @@ class Measurement():
         :param from_residual: Use residual data instead of the original data,
             defaults to False
         :type from_residual: bool, optional
-        :param fit_label: Simulated data (fit) will be added to a column
-            of this name. :class:`None` to skip, defaults to 'Diamagnetism'
-        :type fit_label: str, optional
         :return: Magnetic susceptibility and magnetization offset
         :rtype: tuple
         """
-        magnetization_label = self._column_name(
-            self.Columns.MAGNETIZATION, from_residual)
-
+        magnetization_label = (self.Columns.RESIDUAL_MAGNETIZATION
+                               if from_residual
+                               else self.Columns.MAGNETIZATION)
         coef = self._lateral_linear_fit(self.data[self.Columns.MAGNETICFIELD],
                                         self.data[magnetization_label])
         offset, magnetic_susceptibility = coef
@@ -101,12 +105,9 @@ class Measurement():
         # Simulate data.
         fit = np.polynomial.polynomial.polyval(
             self.data[self.Columns.MAGNETICFIELD], coef)
-        if fit_label is not None:
-            self.data[fit_label] = fit
-        self._modify_residue(self.Columns.MAGNETIZATION,
-                             original_data_label=magnetization_label,
-                             simulated_data=fit)
+        self.data[self.Columns.DIAMAGNETISM] = fit
 
+        self.data.loc[:, self.Columns.RESIDUAL_MAGNETIZATION] -= fit
         return magnetic_susceptibility, offset
 
     @staticmethod
@@ -132,10 +133,9 @@ class Measurement():
         mask = x <= min(x) + lateral_interval
         popt_bottom = np.polynomial.polynomial.polyfit(x[mask], y[mask], 1)
 
-        return (popt_bottom + popt_top) / 2
+        return (popt_bottom + popt_top) / 2  # Two-element array.
 
-    def ferromagnetism(self, from_residual=False,
-                       fit_label='Ferromagnetism', p0=None):
+    def ferromagnetism(self, from_residual=False, p0=None):
         """ Find ferromagnetic component of overall magnetization.
 
         Simulated data are subtracted from residue column.
@@ -143,15 +143,15 @@ class Measurement():
         :param from_residual: Use residual data instead of the original data,
             defaults to False
         :type from_residual: bool, optional
-        :param fit_label: Simulated data (fit) will be added to a column
-            of this name. :class:`None` to skip, defaults to 'Ferromagnetism'
-        :type fit_label: str, optional
+        :param p0: Initial guess of parameters. If None, the parameters will
+            be estimated automatically, defaults to None
+        :type p0: tuple, optional
         :return: Saturation, remanence and coercivity
         :rtype: tuple
         """
-        magnetization_label = self._column_name(
-            self.Columns.MAGNETIZATION, from_residual)
-
+        magnetization_label = (self.Columns.RESIDUAL_MAGNETIZATION
+                               if from_residual
+                               else self.Columns.MAGNETIZATION)
         if p0 is None:
             p0 = self._ferromagnetism_parameter_guess(magnetization_label)
         popt, pcov = scipy_optimize_curve_fit(
@@ -165,11 +165,8 @@ class Measurement():
         # Simulate data.
         fit = magnetic_hysteresis_loop(
             self.data[self.Columns.MAGNETICFIELD], *popt)
-        if fit_label is not None:
-            self.data[fit_label] = fit
-        self._modify_residue(self.Columns.MAGNETIZATION,
-                             original_data_label=magnetization_label,
-                             simulated_data=fit)
+        self.data[self.Columns.FERROMAGNETISM] = fit
+        self.data.loc[:, self.Columns.RESIDUAL_MAGNETIZATION] -= fit
 
         return saturation, remanence, coercivity
 
@@ -183,37 +180,8 @@ class Measurement():
         magnetic_field = self.data[self.Columns.MAGNETICFIELD]
         magnetization = self.data[magnetization_label]
 
-        saturation = (max(magnetization) - min(magnetization)) / 2
+        saturation = abs(max(magnetization) - min(magnetization)) / 2
         remanence = saturation / 2
-        coercivity = (max(magnetic_field) - min(magnetic_field)) / 10
+        coercivity = abs(max(magnetic_field) - min(magnetic_field)) / 10
 
-        return (abs(saturation), abs(remanence), abs(coercivity))
-
-    def _column_name(self, column, residual):
-        """[summary]
-
-        :param column: [description]
-        :type column: [type]
-        :param residual: [description]
-        :type residual: [type]
-        :return: [description]
-        :rtype: [type]
-        """
-        if residual:
-            column += self.RESIDUE_SUFFIX
-        return column
-
-    def _modify_residue(self, column, original_data_label, simulated_data):
-        """[summary]
-
-        :param column: [description]
-        :type column: [type]
-        :param original_data_label: [description]
-        :type original_data_label: [type]
-        :param simulated_data: [description]
-        :type simulated_data: [type]
-        """
-        residual_data_label = self._column_name(column, True)
-        original_data = self.data[original_data_label]
-
-        self.data.loc[:, residual_data_label] = original_data - simulated_data
+        return saturation, remanence, coercivity
