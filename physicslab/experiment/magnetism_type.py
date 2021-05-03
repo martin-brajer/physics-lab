@@ -31,8 +31,7 @@ def process(data):
     magnetization and/or temperature. See :class:`Measurement` for
     details and column names.
 
-    :param data: Measured data
-    :type data: pandas.DataFrame
+    :param pandas.DataFrame data: Measured data
     :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
     :rtype: pandas.Series
     """
@@ -58,9 +57,8 @@ class Measurement():
     subtracted. Suffix :data:`RESIDUE_SUFFIX` will be added to names of
     copied columns.
 
-    :param data: Magnetic field, magnetization and temperature data. See
-        :class:`Measurement.Columns` for default column names.
-    :type data: pandas.DataFrame
+    :param pandas.DataFrame data: Magnetic field, magnetization and temperature
+        data. See :class:`Measurement.Columns` for default column names.
     """
 
     class Columns:
@@ -117,12 +115,10 @@ class Measurement():
 
         Separate fit of top and bottom part. Then average.
 
-        :param x: Free variable
-        :type x: numpy.ndarray
-        :param y: Function value
-        :type y: numpy.ndarray
+        :param numpy.ndarray x: Free variable
+        :param numpy.ndarray y: Function value
         :param percentage: How far from either side should the fitting go.
-            Using value, because center is often measured with higher
+            Using value, because center can be measured with higher
             accuracy, defaults to 10
         :type percentage: int, optional
         :return: Array of fitting parameters sorted in ascending order.
@@ -180,8 +176,7 @@ class Measurement():
     def _ferromagnetism_parameter_guess(self, magnetization_label):
         """ Try to guess ferromagnetic hysteresis loop parameters.
 
-        :param magnetization_label: Source magnetization column name
-        :type magnetization_label: str
+        :param str magnetization_label: Source magnetization column name
         :return: saturation, remanence, coercivity
         :rtype: tuple
         """
