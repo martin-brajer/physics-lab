@@ -27,9 +27,8 @@ PROCESS_COLUMNS = [
 def process(data):
     """ Bundle method.
 
-    Parameter :attr:`data` must include magnetic field and
-    magnetization and/or temperature. See :class:`Measurement` for
-    details and column names.
+    Parameter :attr:`data` must include magnetic field and magnetization.
+    See :class:`Measurement` for details and column names.
 
     :param pandas.DataFrame data: Measured data
     :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
@@ -52,7 +51,7 @@ def process(data):
 
 
 class Measurement():
-    """ Magnetization measurement.
+    """ Magnetization vs magnetic field measurement.
 
     Copy magnetization column as :data:`Columns.RESIDUAL_MAGNETIZATION`,
     so individual magnetic effects can be subtracted.
@@ -145,8 +144,8 @@ class Measurement():
         :param from_residual: Use residual data instead of the original data,
             defaults to False
         :type from_residual: bool, optional
-        :param p0: Initial guess of parameters. If None, the parameters will
-            be estimated automatically, defaults to None
+        :param p0: Initial guess of hysteresis loop parameters. If None, the
+            parameters will be estimated automatically, defaults to None
         :type p0: tuple, optional
         :return: Saturation, remanence and coercivity
         :rtype: tuple
