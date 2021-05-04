@@ -1,7 +1,7 @@
 """
 Magnetization measurement.
 
-
+Separate diamagnetic and ferromagnetic contributions.
 """
 
 
@@ -83,6 +83,12 @@ class Measurement():
         self.data[self.Columns.RESIDUAL_MAGNETIZATION] = \
             self.data[self.Columns.MAGNETIZATION].copy()
 
+    def _magnetization_label(self, from_residual):
+        if from_residual:
+            return self.Columns.RESIDUAL_MAGNETIZATION
+        else:
+            return self.Columns.MAGNETIZATION
+
     def diamagnetism(self, from_residual=False):
         """ Find diamagnetic component of overall magnetization.
 
@@ -94,19 +100,17 @@ class Measurement():
         :return: Magnetic susceptibility and magnetization offset
         :rtype: tuple
         """
-        magnetization_label = (self.Columns.RESIDUAL_MAGNETIZATION
-                               if from_residual
-                               else self.Columns.MAGNETIZATION)
-        coef = self._lateral_linear_fit(self.data[self.Columns.MAGNETICFIELD],
-                                        self.data[magnetization_label])
-        offset, magnetic_susceptibility = coef
+        coef = self._lateral_linear_fit(
+            self.data[self.Columns.MAGNETICFIELD],
+            self.data[self._magnetization_label(from_residual)]
+        )
 
-        # Simulate data.
         fit = np.polynomial.polynomial.polyval(
             self.data[self.Columns.MAGNETICFIELD], coef)
         self.data[self.Columns.DIAMAGNETISM] = fit
-
         self.data.loc[:, self.Columns.RESIDUAL_MAGNETIZATION] -= fit
+
+        offset, magnetic_susceptibility = coef
         return magnetic_susceptibility, offset
 
     @staticmethod
@@ -118,8 +122,8 @@ class Measurement():
         :param numpy.ndarray x: Free variable
         :param numpy.ndarray y: Function value
         :param percentage: How far from either side should the fitting go.
-            Using value, because center can be measured with higher
-            accuracy, defaults to 10
+            Using value, because center can be measured with higher accuracy,
+            defaults to 10
         :type percentage: int, optional
         :return: Array of fitting parameters sorted in ascending order.
         :rtype: numpy.ndarray
@@ -132,7 +136,8 @@ class Measurement():
         mask = x <= min(x) + lateral_interval
         popt_bottom = np.polynomial.polynomial.polyfit(x[mask], y[mask], 1)
 
-        return (popt_bottom + popt_top) / 2  # Two-element array.
+        # Two-element array (const, slope).
+        return (popt_bottom + popt_top) / 2
 
     def ferromagnetism(self, from_residual=False, p0=None):
         """ Find ferromagnetic component of overall magnetization.
@@ -150,15 +155,14 @@ class Measurement():
         :return: Saturation, remanence and coercivity
         :rtype: tuple
         """
-        magnetization_label = (self.Columns.RESIDUAL_MAGNETIZATION
-                               if from_residual
-                               else self.Columns.MAGNETIZATION)
+        magnetization = self.data[self._magnetization_label(from_residual)]
         if p0 is None:
-            p0 = self._ferromagnetism_parameter_guess(magnetization_label)
+            p0 = self._ferromagnetism_parameter_guess(
+                B=self.data[self.Columns.MAGNETICFIELD], M=magnetization)
         popt, pcov = scipy_optimize_curve_fit(
             f=magnetic_hysteresis_loop,
             xdata=self.data[self.Columns.MAGNETICFIELD],
-            ydata=self.data[magnetization_label],
+            ydata=magnetization,
             p0=p0
         )
         saturation, remanence, coercivity = popt
@@ -170,18 +174,17 @@ class Measurement():
 
         return saturation, remanence, coercivity
 
-    def _ferromagnetism_parameter_guess(self, magnetization_label):
+    @staticmethod
+    def _ferromagnetism_parameter_guess(B, M):
         """ Try to guess ferromagnetic hysteresis loop parameters.
 
-        :param str magnetization_label: Source magnetization column name
-        :return: saturation, remanence, coercivity
+        :param float B: Magnetic field
+        :param float M: Magnetization
+        :return: Saturation, remanence, coercivity
         :rtype: tuple
         """
-        magnetic_field = self.data[self.Columns.MAGNETICFIELD]
-        magnetization = self.data[magnetization_label]
-
-        saturation = abs(max(magnetization) - min(magnetization)) / 2
-        remanence = saturation / 2
-        coercivity = abs(max(magnetic_field) - min(magnetic_field)) / 10
+        saturation = abs(max(M) - min(M)) * 0.5  # 50 %
+        remanence = saturation * 0.5  # 25 %
+        coercivity = abs(max(B) - min(B)) * 0.1  # 10 %
 
         return saturation, remanence, coercivity

@@ -4,6 +4,7 @@ Van der Pauw resistivity measurement.
 | Four-point measurement bypass resistance of ohmic contacts.
 | To find resistivity from sheet resistance, use
     :mod:`physicslab.electricity.Resistivity.from_sheet_resistance` method.
+| Pay special attention to enum :class:`Geometry`.
 """
 
 import enum

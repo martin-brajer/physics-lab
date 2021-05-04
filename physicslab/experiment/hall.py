@@ -115,5 +115,5 @@ class Measurement:
 
         signed_sheet_density = slope / -elementary_charge
         sheet_density = abs(signed_sheet_density)
-        conductivity_type = _conductivity_type(signed_sheet_density)
+        conductivity_type = self._conductivity_type(signed_sheet_density)
         return sheet_density, conductivity_type, fit_residual
