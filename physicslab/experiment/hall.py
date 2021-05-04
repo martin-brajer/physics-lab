@@ -43,8 +43,7 @@ def process(data, thickness=None, sheet_resistance=None):
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
-    (sheet_density, conductivity_type, residual
-     ) = measurement.solve_for_sheet_density(full=True)
+    sheet_density, conductivity_type, residual = measurement.analyze()
 
     if thickness is None:
         concentration = np.nan
@@ -65,9 +64,8 @@ def process(data, thickness=None, sheet_resistance=None):
 class Measurement:
     """ Hall measurement.
 
-    :param data: Voltage/current/magnetic field triples. See
+    :param pandas.DataFrame data: Voltage/current/magnetic field triples. See
         :class:`Measurement.Columns` for default column names.
-    :type data: pandas.DataFrame
     """
 
     class Columns:
@@ -90,8 +88,7 @@ class Measurement:
     def _conductivity_type(hall_voltage):
         """ Find conductivity type based on sign of hall voltage.
 
-        :param hall_voltage: Hall voltage
-        :type hall_voltage: float
+        :param float hall_voltage: Hall voltage
         :return: Either "p" or "n"
         :rtype: str
         """
@@ -100,14 +97,10 @@ class Measurement:
         else:
             return 'n'
 
-    def solve_for_sheet_density(self, full=False):
+    def analyze(self):
         """ Compute sheet density and determine conductivity type.
 
-        :param full: Switch determining the nature of the return value. When
-            `False` just sheet density and conductivity type are returned.
-            When `True`, fit residual is also returned, defaults to False
-        :type full: bool, optional
-        :return: Sheet density, conductivity type, (fit residual)
+        :return: Sheet density, conductivity type, fit residual
         :rtype: tuple
         """
         self.data['hall_resistance'] = Resistance.from_ohms_law(
@@ -118,13 +111,9 @@ class Measurement:
             self.data[self.Columns.MAGNETICFIELD],
             1, full=True)
         slope = coefficients_full[0][1]  # Constant can be found at [0][0].
-        residual = coefficients_full[1][0][0]
+        fit_residual = coefficients_full[1][0][0]
 
         signed_sheet_density = slope / -elementary_charge
-        if full:
-            return (abs(signed_sheet_density),
-                    Measurement._conductivity_type(signed_sheet_density),
-                    residual)
-        else:
-            return (abs(signed_sheet_density),
-                    _conductivity_type(signed_sheet_density))
+        sheet_density = abs(signed_sheet_density)
+        conductivity_type = _conductivity_type(signed_sheet_density)
+        return sheet_density, conductivity_type, fit_residual

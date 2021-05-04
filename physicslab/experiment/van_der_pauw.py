@@ -46,9 +46,8 @@ def process(data, thickness=None):
     """
     measurement = Measurement(data)
     measurement.find_resistances()
-    Rh, Rv = measurement.group_and_average()
-    sheet_resistance, ratio_resistance = (
-        measurement.solve_for_sheet_resistance(Rh, Rv))
+    Rh, Rv = measurement.group_geometries_and_average()
+    sheet_resistance, ratio_resistance = measurement.analyze(Rh, Rv)
     sheet_conductance = 1 / sheet_resistance
 
     if thickness is None:
@@ -131,9 +130,9 @@ class Solve:
 class Measurement:
     """ Van der Pauw resistances measurements.
 
-    :param data: Voltage/current pairs or resistances with respective
-        geometries. See :class:`Measurement.Columns` for default column names.
-    :type data: pandas.DataFrame
+    :param pandas.DataFrame data: Voltage/current pairs or resistances with
+        respective geometries. See :class:`Measurement.Columns` for default
+        column names.
     """
 
     class Columns:
@@ -157,7 +156,7 @@ class Measurement:
             self.data[self.Columns.CURRENT]
         )
 
-    def group_and_average(self):
+    def group_geometries_and_average(self):
         """ Classify geometries into either :class:`Geometry.Horizontal`
         or :class:`Geometry.Vertical`. Then average respective resistances.
 
@@ -177,7 +176,7 @@ class Measurement:
         Rv = np.average(group[Geometry.RVertical])
         return Rh, Rv
 
-    def solve_for_sheet_resistance(self, Rh, Rv):
+    def analyze(self, Rh, Rv):
         """ Solve :meth:`Solve.implicit_formula` to find sample's
         sheet resistance. Also compute resistance symmetry ratio (always
         greater than one). The ratio shows how squarish the sample is,
