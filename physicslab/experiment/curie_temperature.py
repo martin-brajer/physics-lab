@@ -65,8 +65,8 @@ class Measurement():
             If None, the parameters will be estimated automatically,
             defaults to None
         :type p0: tuple, optional
-        :return: TC (Curie temperature), TCs_difference
-        :rtype: tuple
+        :return: TC (Curie temperature)
+        :rtype: float
         """
         TC, fit = self.fit(
             T=self.data[self.Columns.TEMPERATURE],
