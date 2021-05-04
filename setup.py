@@ -29,8 +29,5 @@ setuptools.setup(
         'numpy',
         'pandas',
         'scipy',
-        'ezodf',
-        'lxml',
-        'odfpy',
     ],
 )
