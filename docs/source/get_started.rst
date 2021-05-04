@@ -5,6 +5,20 @@ Get started
 
 Use cases.
 
+
+Load data
+---------
+
+.. code:: python
+   
+   # Read *.ods excel.
+   data = pd.read_excel(
+      'D:\...\data.ods',
+      sheet_name=0,
+      skiprows=1,
+      ).dropna(how='all')
+
+
 Experiment subpackage
 ---------------------
 
