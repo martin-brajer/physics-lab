@@ -34,7 +34,7 @@ or utilize the following batch function.
  
 .. code:: bash
  
-            sheet_resistance  ratio_resistance  sheet_conductance  resistivity  conductivity
+              sheet_resistance  ratio_resistance  sheet_conductance  resistivity  conductivity
    sample#1       1.590823e+05          1.168956       6.286055e-06     0.200762      4.981026
    sample#2       1.583278e+05          1.185031       6.316009e-06     0.199810      5.004762
    ...

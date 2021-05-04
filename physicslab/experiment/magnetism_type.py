@@ -139,6 +139,8 @@ class Measurement():
         """ Find ferromagnetic component of overall magnetization.
 
         Simulated data are subtracted from residue column.
+        Hysteresis loop shape can be found in
+        :meth:`physicslab.curves.magnetic_hysteresis_loop`.
 
         :param from_residual: Use residual data instead of the original data,
             defaults to False
