@@ -16,7 +16,6 @@ from physicslab.curves import spontaneous_magnetization
 #: Column names used in :meth:`process` function.
 PROCESS_COLUMNS = [
     'curie_temperature',
-    'TCs_difference'
 ]
 
 
@@ -32,11 +31,10 @@ def process(data):
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
-
-    TC, TCs_difference = measurement.analyze()
+    TC = measurement.analyze()
 
     return pd.Series(
-        data=(TC, TCs_difference),
+        data=(TC,),
         index=PROCESS_COLUMNS)
 
 
@@ -70,20 +68,15 @@ class Measurement():
         :return: TC (Curie temperature), TCs_difference
         :rtype: tuple
         """
-        Ts = np.split(self.data[self.Columns.TEMPERATURE], 2)
-        Ms = np.split(self.data[self.Columns.MAGNETIZATION], 2)
+        TC, fit = self.fit(
+            T=self.data[self.Columns.TEMPERATURE],
+            M=self.data[self.Columns.MAGNETIZATION],
+            p0=p0,
+            high_temperature_focus=True
+        )
 
-        TCs = []
-        fits = []
-        for T, M in zip(Ts, Ms):
-            TC, fit = self.fit(T, M, p0, True)
-            TCs.append(TC)
-            fits.append(fit)
-
-        self.data[self.Columns.HIGHTEMPERATUREFIT] = np.append(*fits)
-        TC = (TCs[0] + TCs[1]) / 2
-        TCs_difference = abs(TCs[0] - TCs[1])
-        return TC, TCs_difference
+        self.data[self.Columns.HIGHTEMPERATUREFIT] = fit
+        return TC
 
     def fit(self, T, M, p0=None, high_temperature_focus=False):
         """ Fit spontaneous magnetization curve to the data.
