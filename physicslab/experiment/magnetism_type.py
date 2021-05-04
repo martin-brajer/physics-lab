@@ -163,7 +163,6 @@ class Measurement():
         )
         saturation, remanence, coercivity = popt
 
-        # Simulate data.
         fit = magnetic_hysteresis_loop(
             self.data[self.Columns.MAGNETICFIELD], *popt)
         self.data[self.Columns.FERROMAGNETISM] = fit

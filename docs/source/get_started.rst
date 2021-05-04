@@ -90,8 +90,8 @@ Magnetism type
    plt.show()
 
 
-Line
-----
+curves.Line
+-----------
 
 .. code:: python
 
