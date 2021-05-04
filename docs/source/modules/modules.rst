@@ -14,6 +14,7 @@ Experiment subpackage
    experiment/van_der_pauw
    experiment/hall
    experiment/magnetism_type
+   experiment/curie_temperature
 
 Modules
 -------
