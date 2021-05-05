@@ -26,17 +26,6 @@ def gaussian_curve_FWHM(variance):
     return 2 * np.sqrt(2 * np.ln(2)) * variance
 
 
-class Spontaneous_magnetization:
-    """ """
-    @staticmethod
-    def func(T, M0, TC, a, b, zero):
-        return
-
-    @staticmethod
-    def parameter_guess(T, M):
-        return
-
-
 def spontaneous_magnetization(T, M0, TC, a, b, zero):
     """ An empirical interpolation of the low temperature and the critical
     temperature regimes.
