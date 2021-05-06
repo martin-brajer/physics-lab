@@ -30,6 +30,9 @@ def process(data):
     Parameter :attr:`data` must include magnetic field and magnetization.
     See :class:`Measurement` for details and column names.
 
+    Output :attr:`ratio_DM_FM` compares max values - probably for the
+    strongest magnetic field.
+
     :param pandas.DataFrame data: Measured data
     :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
     :rtype: pandas.Series
@@ -92,7 +95,7 @@ class Measurement():
     def diamagnetism(self, from_residual=False):
         """ Find diamagnetic component of overall magnetization.
 
-        Simulated data are subtracted from residue column.
+        Simulated data are subtracted from residue column (making it centred).
 
         :param from_residual: Use residual data instead of the original data,
             defaults to False

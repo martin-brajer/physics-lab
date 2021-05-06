@@ -68,14 +68,14 @@ class Measurement():
         :return: Curie temperature
         :rtype: float
         """
-        TC, fit = self.fit(
+        TC, fit_data = self.fit(
             T=self.data[self.Columns.TEMPERATURE],
             M=self.data[self.Columns.MAGNETIZATION],
             p0=p0,
             high_temperature_focus=True
         )
 
-        self.data[self.Columns.HIGHTEMPERATUREFIT] = fit
+        self.data[self.Columns.HIGHTEMPERATUREFIT] = fit_data
         return TC
 
     def fit(self, T, M, p0=None, high_temperature_focus=False):
@@ -101,8 +101,8 @@ class Measurement():
             f=spontaneous_magnetization, xdata=T, ydata=M, p0=p0, sigma=sigma)
 
         TC = popt[1]
-        fit = spontaneous_magnetization(T, *popt)
-        return TC, fit
+        fit_data = spontaneous_magnetization(T, *popt)
+        return TC, fit_data
 
     def _parameter_guess(self, T, M):
         """ Try to guess :meth:`physicslab.curves.spontaneous_magnetization`

@@ -12,11 +12,9 @@ Load data
 .. code:: python
    
    # Read *.ods excel.
-   data = pd.read_excel(
-      'D:\...\data.ods',
-      sheet_name=0,
-      skiprows=1,
-      ).dropna(how='all')
+   data = pd.read_excel('D:\...\data2.ods', sheet_name=0,
+                        skiprows=1).dropna(how='all')
+   data.name = 'data2'
 
 
 Experiment subpackage
@@ -27,7 +25,7 @@ or utilize the following batch function.
 
 .. code:: python
 
-   ### Example: Van der Pauw
+   # Example: Van der Pauw
    import pandas as pd
 
    def load(filename):
