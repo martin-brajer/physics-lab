@@ -7,19 +7,23 @@ Curves
 import numpy as np
 
 
-def gaussian_curve(x, expected_value, amplitude, variance, zero=0):
+def gaussian_curve(x, expected_value, variance, amplitude=None, zero=0):
     """ Gauss curve function of given parameters.
 
-    :param float amplitude: Amplitude (value at maximum relative to
-        the baseline)
-    :param float variance: Variance (not FWHM)
+    :param numpy.ndarray x: Free variable
     :param float expected_value: Center
-    :param float zero: Baseline
+    :param float variance: Variance (not FWHM)
+    :param amplitude: Amplitude (value at maximum relative to
+        the baseline). None normalize as probability, defaults to None
+    :type amplitude: float, optional
+    :param int zero: Baseline, defaults to 0
     :return: Gaussian curve values
     :rtype: numpy.ndarray
     """
-    return amplitude * np.exp(
-        -((x - expected_value)**2) / (2 * variance**2)) + zero
+    if amplitude is None:
+        amplitude = 1 / (variance * np.sqrt(2 * np.pi))
+    return zero + amplitude * np.exp(
+        -((x - expected_value)**2) / (2 * variance**2))
 
 
 def gaussian_curve_FWHM(variance):
@@ -44,7 +48,7 @@ def spontaneous_magnetization(T, M0, TC, a, b, zero):
     M = np.zeros_like(T)
     mask = T < TC
     M[mask] = M0 * (1 - (T[mask] / TC) ** a) ** b
-    return M + zero
+    return zero + M
 
 
 def magnetic_hysteresis_branch(H, saturation, remanence, coercivity,
