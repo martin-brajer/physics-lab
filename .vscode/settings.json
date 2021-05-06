@@ -5,9 +5,11 @@
         "textrm"
     ],
     "autoDocstring.docstringFormat": "sphinx",
-    "restructuredtext.sphinxBuildPath": "C:\\Python\\Scripts\\sphinx-build.exe",
-    "restructuredtext.confPath": "${workspaceFolder}\\docs\\source",
-    "restructuredtext.builtDocumentationPath": "${workspaceFolder}\\docs\\build\\html",
+    // Needs Python > 3.7.
+    // "restructuredtext.sphinxBuildPath": "C:\\Python\\Scripts\\sphinx-build.exe",
+    // "restructuredtext.confPath": "${workspaceFolder}\\docs\\source",
+    // "restructuredtext.builtDocumentationPath": "${workspaceFolder}\\docs\\build\\html",
+    // "restructuredtext.languageServer.disabled": false,
     "python.linting.pycodestyleEnabled": true,
     "python.linting.enabled": true,
 }

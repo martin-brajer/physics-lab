@@ -153,9 +153,7 @@ class Measurement:
     def find_resistances(self):
         """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
         self.data.loc[:, self.Columns.RESISTANCE] = Resistance.from_ohms_law(
-            self.data[self.Columns.VOLTAGE],
-            self.data[self.Columns.CURRENT]
-        )
+            self.data[self.Columns.VOLTAGE], self.data[self.Columns.CURRENT])
 
     def group_geometries_and_average(self):
         """ Classify geometries into either :class:`Geometry.Horizontal`
