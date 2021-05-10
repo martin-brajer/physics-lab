@@ -50,11 +50,14 @@ extensions = [
 autodoc_member_order = 'bysource'
 
 # Add Python version number to the default address to correctly reference
-# the Python standard library
+# the Python standard library.
+# See up-to-date intersphinx_mappings here:
+# https://gist.github.com/bskinn/0e164963428d4b51017cebdb6cda5209
 intersphinx_mapping = {
+    'matplotlib': ('https://matplotlib.org/stable/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'pandas': ('https://pandas.pydata.org/docs/', None),
     'python': ('https://docs.python.org/3.6', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
-    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
 }
 
 # Add any paths that contain templates here, relative to this directory.
