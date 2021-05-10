@@ -99,3 +99,40 @@ curves.Line
    line1 - 5.3 + 2.4 * line2  # Line: y = -2.3 + 2.8x
    line1.zero()  # 1.5
    Line.Intersection(line1, line2)  # (0.75, 1.5)
+
+ui.plot_grid & utility.squarificate
+-----------------------------------
+
+.. code:: python
+
+   import matplotlib.pyplot as plt
+   import numpy as np
+   import physicslab
+
+   x = np.linspace(-10, 10, num=1000)
+
+   def plot_value(ax, value):  # Sine.
+      ax.plot(x, np.sin(x * value / 10), label=value)
+
+   def alphabet(num):  # ['A', 'B', ...]
+      return [(chr(ord('A') + i)) for i in range(num)]
+
+   data = np.arange(14, dtype=float)  # E.g. a list of measurements.
+   data = physicslab.utility.squarificate(data)  # Squarish 2D array distribution.
+   df = pd.DataFrame(data, index=alphabet(data.shape[0]))  # Naming.
+   df.name = 'My title'
+
+   print(df)
+   physicslab.ui.plot_grid(
+      df, plot_value, xlabel='my xlabel', ylabel='my ylabel',
+      subplots_adjust_kw={'hspace': 0}, sharey=True, legend_size=5)
+
+.. code:: bash
+
+         0     1     2     3
+   A   0.0   1.0   2.0   3.0
+   B   4.0   5.0   6.0   7.0
+   C   8.0   9.0  10.0  11.0
+   D  12.0  13.0   NaN   NaN
+
+.. image:: _static/ui.plot_grid.my_title.png

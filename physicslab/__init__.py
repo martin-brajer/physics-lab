@@ -1,9 +1,12 @@
 """
 Physics Lab package helps with common experiments.
+
+Source code (and link to the documentation) can be found at
+`GitHub <https://github.com/martin-brajer/physics-lab>`_
 """
 
 # __all__ []
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 __author__ = 'Martin Brajer'
 
 
