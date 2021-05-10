@@ -191,11 +191,15 @@ class Line():
         return self + (-value)
 
     def __mul__(self, value):
+        if isinstance(value, Line):
+            raise TypeError('Can\'t multiply Line by another Line.')
         constant = self.constant * value
         slope = self.slope * value
         return Line(constant, slope)
 
     def __truediv__(self, value):
+        if isinstance(value, Line):
+            raise TypeError('Can\'t divide Line by another Line.')
         return self * (1 / value)
 
     def __pos__(self):
