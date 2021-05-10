@@ -10,7 +10,8 @@ import numpy as np
 
 def plot_grid(df, plot_value, xlabel=None, ylabel=None,
               title_label=True, row_label=True, col_label=True,
-              legend=True, legend_size=10, subplots_adjust_kw=None, **kwargs):
+              legend=False, legend_size=10, show_axis=True,
+              subplots_adjust_kw=None, **kwargs):
     """ Construct a figure with the same layout as the input.
 
     For example, use it to display
@@ -39,12 +40,14 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
     :type legend: bool, optional
     :param legend_size: Legend box and font size, defaults to 10
     :type legend_size: float, optional
+    :param show_axis: Visibility of axis, ticks and frame, defaults to True
+    :type show_axis: bool, optional
     :param subplots_adjust_kw: Dict with keywords passed to the
-        :meth:`matplotlib.pyplot.subplots_adjust` call.
+        :func:`~matplotlib.pyplot.subplots_adjust` call.
         E.g. ``hspace``, defaults to None
     :type subplots_adjust_kw: dict, optional
     :param kwargs: All additional keyword arguments are passed to the
-        :meth:`matplotlib.pyplot.figure` call. E.g. ``sharex``.
+        :func:`~matplotlib.pyplot.figure` call. E.g. ``sharex``.
     """
     title = df.name if (title_label and hasattr(df, 'name')) else None
 
@@ -52,19 +55,20 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
     fig, axs = plt.subplots(num=title, nrows=nrows, ncols=ncols, **kwargs)
 
     for i, (ax_row, (index, row)) in enumerate(zip(axs, df.iterrows())):
-        for j, (ax, (column, value)) in enumerate(
-                zip(ax_row, row.iteritems())):
-            isnan = isinstance(value, float) and np.isnan(value)
-            if isnan or value is None:
-                ax.axis('off')
-                continue
-            plot_value(ax, value)  # Main.
-            if legend:
-                ax.legend(prop={'size': legend_size})
+        for j, (ax, (col, value)) in enumerate(zip(ax_row, row.iteritems())):
             if col_label and i == 0:  # First row.
-                ax.set_title(column)
+                ax.set_title(col)
             if row_label and j == 0:  # First column.
                 ax.set_ylabel(row.name)
+            isnan = isinstance(value, float) and np.isnan(value)
+            if isnan or value is None:
+                _hide_axis(ax)
+                continue
+            if not show_axis:
+                _hide_axis(ax)
+            plot_value(ax, value)  # Main stuff happens here.
+            if legend:
+                ax.legend(prop={'size': legend_size})
 
     # Common x and y labels.
     if xlabel is not None:
@@ -72,13 +76,29 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
     if ylabel is not None:
         fig.text(0.04, 0.5, ylabel, va='center', rotation='vertical')
 
-    # plt.subplots_adjust
+    # plt.subplots_adjust()
+    left_add = int(ylabel is not None) + int(col_label is not None)
     default = {
-        'left': 0.15 if row_label else None,
-        'bottom': 0.15 if col_label else None,
+        'left': 0.10 + left_add * 0.05,
+        'bottom': 0.10 if xlabel is None else 0.15,
+        'right': 0.95,
+        'top': 0.95,
     }
     if subplots_adjust_kw is None:
         subplots_adjust_kw = {}
     plt.subplots_adjust(**{**default, **subplots_adjust_kw})
 
     plt.show()
+
+
+def _hide_axis(ax):
+    """ Like ``ax.axis('off')``, but keeps labels visible.
+
+    :param ax: Axis
+    :type ax: matplotlib.axes.Axes
+    """
+    ax.set_xticks([])
+    ax.set_xticklabels([])
+    ax.set_yticks([])
+    ax.set_yticklabels([])
+    ax.set_frame_on(False)
