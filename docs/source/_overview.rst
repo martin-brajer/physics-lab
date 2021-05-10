@@ -6,7 +6,7 @@
 .. |License| image:: https://img.shields.io/github/license/martin-brajer/physics-lab
    :target: https://github.com/martin-brajer/physics-lab/blob/main/LICENSE
 .. |Unittest| image:: https://github.com/martin-brajer/physics-lab/workflows/Python%20unittest/badge.svg
-   :target: https://github.com/martin-brajer/card-assembler/actions
+   :target: https://github.com/martin-brajer/physics-lab/actions
 .. |Documentation Status| image:: https://readthedocs.org/projects/physics-lab/badge/?version=latest
    :target: https://physics-lab.readthedocs.io/en/latest/?badge=latest
 .. |PyPI| image:: https://badge.fury.io/py/physicslab.svg
