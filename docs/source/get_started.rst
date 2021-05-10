@@ -136,3 +136,14 @@ ui.plot_grid & utility.squarificate
    D  12.0  13.0   NaN   NaN
 
 .. image:: _static/ui.plot_grid.my_title.png
+
+ui.plot_grid
+------------
+.. code:: python
+
+   import matplotlib.image as mpimg
+   
+   # Show pictures (like SEM images). Parameter value is then e.g. a filename.
+   def plot_value(ax, value):
+      img = mpimg.imread(filepath)
+      ax.imshow(img, cmap='gray')
