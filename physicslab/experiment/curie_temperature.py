@@ -92,7 +92,7 @@ class Measurement():
         :param high_temperature_focus: Give high temperature data more weight,
             defaults to False
         :type high_temperature_focus: bool, optional
-        :return: TC(second parameter), fit
+        :return: Curie temperature, fit
         :rtype: tuple(float, numpy.ndarray)
         """
         p0 = self._parameter_guess(T, M)

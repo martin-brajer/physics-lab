@@ -36,13 +36,26 @@ def permutation_sign(array):
 def squarificate(iterable, filler=None):
     """ Reshape 1D :attr:`iterable` into squarish 2D array.
 
-    Mainly use with :meth:`physicslab.ui.plot_grid`, if the positions
-    are arbitrary.
+    | Mainly use with :meth:`physicslab.ui.plot_grid`, if the positions are
+        arbitrary.
+    | Example: reshape :class:`list` of 10 filenames into 3x4 array. The two
+        new elements will be populated by :attr:`filler`.
 
-    Example: reshape :class:`list` of 10 elements into 3x4 array.
-    The two new elements will be populated by :attr:`filler`.
+    .. warning::
 
-    :param iterable: Source 1D iterable. E.g. list of filenames
+        If elements of :attr:`iterable` are :class:`numpy.ndarray`, array
+        constructor will unpack them to create a multidimensional array. To
+        bypass this behaviour, create a wrapper class:
+
+    .. code:: python
+
+        class Data:
+            def __init__(self, value):
+                self.value = value
+
+        measurements = [Data(measurement) for measurement in measurements]
+
+    :param iterable: Source 1D iterable.
     :type iterable: list, numpy.ndarray
     :param filler: Value to pad the array with, defaults to None
     :type filler: object, optional
