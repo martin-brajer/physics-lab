@@ -13,7 +13,7 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
               legend=True, legend_size=10, subplots_adjust_kw=None, **kwargs):
     """ Construct a figure with the same layout as the input.
 
-    Use it for example to show
+    For example, use it to display
     `SEM <https://en.wikipedia.org/wiki/Scanning_electron_microscope>`_
     images, where rows correspond to different magnifications and columns
     to samples.
