@@ -39,7 +39,7 @@ def gather_files(extension, folder, key_edit=None, trim_extension=True):
 
 
 def subfolder(folder, look_for):
-    """ Look for subfolder containing :attr:`look_for` in their name.
+    """ Look for a subfolder containing :attr:`look_for` in its name.
 
     :param str folder: Search there
     :param str look_for: Part of the folder name to look for. Can be RegEx.
