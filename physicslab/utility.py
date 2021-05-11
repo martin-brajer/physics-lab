@@ -59,6 +59,8 @@ def squarificate(iterable, filler=None):
     :type iterable: list, numpy.ndarray
     :param filler: Value to pad the array with, defaults to None
     :type filler: object, optional
+    :raises NotImplementedError: If :attr:`iterable` is array-like
+    :raises ValueError: If :attr:`iterable` has more than one dimension
     :return: Modified array
     :rtype: numpy.ndarray
     """
@@ -67,11 +69,15 @@ def squarificate(iterable, filler=None):
     if isinstance(iterable, (pd.Series, pd.DataFrame)):  # Pandas
         array = iterable.values
     else:
+        if isinstance(iterable[0], (np.ndarray, pd.Series, pd.DataFrame)):
+            raise NotImplementedError(
+                'List of arrays do not work properly. Use wrapper'
+                ' class instead. For details see the documentation.')
         array = np.array(iterable)  # Other (list, tuple)
 
     num = array.shape
     if len(num) > 1:
-        raise ValueError('iterable attribute must be 1D')
+        raise ValueError('Iterable attribute must be one-dimensional.')
     num = num[0]
     ncols = int(np.ceil(np.sqrt(num)))  # Width. Round up to int.
     nrows = int(np.ceil(num / ncols))  # Height.
