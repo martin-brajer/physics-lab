@@ -1,5 +1,5 @@
-"""
-UI
+""" User interface.
+
 """
 # __all__ =
 

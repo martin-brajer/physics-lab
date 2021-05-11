@@ -1,5 +1,4 @@
-"""
-Curie temperature.
+""" Curie temperature.
 
 Find Curie temperature from magnetization vs temperature measurement.
 """

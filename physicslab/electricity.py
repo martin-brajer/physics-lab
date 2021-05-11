@@ -1,5 +1,6 @@
-"""
-Electricity
+""" Electricity related properties.
+
+Mainly mutual conversion and units.
 """
 # __all__ =
 

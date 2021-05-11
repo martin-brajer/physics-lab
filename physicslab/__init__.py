@@ -1,5 +1,4 @@
-"""
-Physics Lab package helps with common experiments.
+""" Physics Lab package helps with evaluation of common experiment data.
 
 Source code (and link to the documentation) can be found at
 `GitHub <https://github.com/martin-brajer/physics-lab>`_

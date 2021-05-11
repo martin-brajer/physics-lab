@@ -1,5 +1,5 @@
-"""
-IO
+""" Filesystem manipulation.
+
 """
 # __all__ =
 

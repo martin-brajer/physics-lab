@@ -1,5 +1,4 @@
-"""
-Hall measurement.
+""" Hall measurement.
 
 Induced voltage perpendicular to both current and magnetic field.
 """

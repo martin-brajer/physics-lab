@@ -1,5 +1,4 @@
-"""
-Magnetization measurement.
+""" Magnetization measurement.
 
 Separate diamagnetic and ferromagnetic contributions.
 """

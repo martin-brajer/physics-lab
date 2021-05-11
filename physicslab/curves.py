@@ -1,5 +1,5 @@
-"""
-Curves
+""" Curves.
+
 """
 # __all__ =
 
