@@ -5,6 +5,7 @@ IO
 
 
 import os
+import re
 
 
 def gather_files(extension, folder, key_edit=None, trim_extension=True):
@@ -41,14 +42,15 @@ def subfolder(folder, look_for):
     """ Look for subfolder containing :attr:`look_for` in their name.
 
     :param str folder: Search there
-    :param str look_for: Part of a folder name to look for
+    :param str look_for: Part of the folder name to look for. Can be RegEx.
     :raises OSError: If no subfolder found
     :raises OSError: If multiple subfolders found
     :return: Path to the found subfolder
     :rtype: str
     """
     subfolders = os.walk(folder).__next__()[1]  # [1] => folders only.
-    matching = [subfolder for subfolder in subfolders if look_for in subfolder]
+    matching = [subfolder for subfolder in subfolders
+                if re.search(look_for, subfolder)]
     if not matching:
         raise OSError('"{}" not found in "{}".'.format(look_for, folder))
     if len(matching) > 1:
