@@ -43,16 +43,12 @@ def process(data, thickness=None, sheet_resistance=None):
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
+    (concentration, mobility) = [np.nan] * 2
+
     sheet_density, conductivity_type, residual = measurement.analyze()
-
-    if thickness is None:
-        concentration = np.nan
-    else:
+    if thickness is not None:
         concentration = carrier_concentration(sheet_density, thickness)
-
-    if sheet_resistance is None:
-        mobility = np.nan
-    else:
+    if sheet_resistance is not None:
         mobility = Mobility.from_sheets(sheet_density, sheet_resistance)
 
     return pd.Series(

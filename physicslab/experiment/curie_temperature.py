@@ -31,10 +31,11 @@ def process(data):
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
-    TC = measurement.analyze()
+
+    curie_temperature = measurement.analyze()
 
     return pd.Series(
-        data=(TC,),
+        data=(curie_temperature,),
         index=PROCESS_COLUMNS)
 
 

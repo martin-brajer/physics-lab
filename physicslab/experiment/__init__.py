@@ -26,9 +26,9 @@ def process(measurements, by_module, **kwargs):
     """
     import pandas as pd
 
-    output = pd.DataFrame(columns=by_module.PROCESS_COLUMNS)
+    output = []
     for i, measurement in enumerate(measurements):
         series = by_module.process(measurement, **kwargs)
         series.name = measurement.name if hasattr(measurement, 'name') else i
-        output = output.append(series)
-    return output
+        output.append(series)
+    return pd.DataFrame(data=output, columns=by_module.PROCESS_COLUMNS)

@@ -46,14 +46,13 @@ def process(data, thickness=None):
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
+    (resistivity, conductivity) = [np.nan] * 2
+
     measurement.find_resistances()
     Rh, Rv = measurement.group_geometries_and_average()
     sheet_resistance, ratio_resistance = measurement.analyze(Rh, Rv)
     sheet_conductance = 1 / sheet_resistance
-
-    if thickness is None:
-        resistivity, conductivity = np.nan, np.nan
-    else:
+    if thickness is not None:
         resistivity = Resistivity.from_sheet_resistance(
             sheet_resistance, thickness)
         conductivity = sheet_conductance / thickness
