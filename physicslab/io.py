@@ -35,3 +35,23 @@ def gather_files(extension, folder, key_edit=None, trim_extension=True):
                     stem = key_edit(stem)
                 found[stem] = os.path.join(path, file_)
     return found
+
+
+def subfolder(folder, look_for):
+    """ Look for subfolder containing :attr:`look_for` in their name.
+
+    :param str folder: Search there
+    :param str look_for: Part of a folder name to look for
+    :raises OSError: If no subfolder found
+    :raises OSError: If multiple subfolders found
+    :return: Path to the found subfolder
+    :rtype: str
+    """
+    subfolders = os.walk(folder).__next__()[1]  # [1] => folders only.
+    matching = [subfolder for subfolder in subfolders if look_for in subfolder]
+    if not matching:
+        raise OSError('"{}" not found in "{}".'.format(look_for, folder))
+    if len(matching) > 1:
+        raise OSError('Multiple "{}" found in "{}".'.format(look_for, folder))
+
+    return os.path.join(folder, matching[0])  # len(matching) == 1
