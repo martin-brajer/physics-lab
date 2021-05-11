@@ -77,9 +77,8 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
         fig.text(0.04, 0.5, ylabel, va='center', rotation='vertical')
 
     # plt.subplots_adjust()
-    left_add = int(ylabel is not None) + int(col_label is not None)
     default = {
-        'left': 0.10 + left_add * 0.05,
+        'left': 0.10 if ylabel is None else 0.15,
         'bottom': 0.10 if xlabel is None else 0.15,
         'right': 0.95,
         'top': 0.95,
