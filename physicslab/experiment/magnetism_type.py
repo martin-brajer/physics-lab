@@ -24,7 +24,7 @@ PROCESS_COLUMNS = [
 ]
 
 
-def process(data):
+def process(data, diamagnetism=True, ferromagnetism=True):
     """ Bundle method.
 
     Parameter :attr:`data` must include magnetic field and magnetization.
@@ -34,18 +34,28 @@ def process(data):
     strongest magnetic field.
 
     :param pandas.DataFrame data: Measured data
+    :param diamagnetism: Look for diamagnetism contribution, defaults to True
+    :type diamagnetism: bool, optional
+    :param ferromagnetism: Look for ferromagnetism contribution,
+        defaults to True
+    :type ferromagnetism: bool, optional
     :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
+    (magnetic_susceptibility, offset, saturation, remanence,
+     coercivity, ratio_DM_FM) = [np.nan] * 7
 
-    magnetic_susceptibility, offset = measurement.diamagnetism(
-        from_residual=True)
-    saturation, remanence, coercivity = measurement.ferromagnetism(
-        from_residual=True)
-    ratio_DM_FM = abs(
-        measurement.data[Measurement.Columns.DIAMAGNETISM].iloc[-1]
-        / measurement.data[Measurement.Columns.FERROMAGNETISM].iloc[-1])
+    if diamagnetism:
+        magnetic_susceptibility, offset = measurement.diamagnetism(
+            from_residual=True)
+    if ferromagnetism:
+        saturation, remanence, coercivity = measurement.ferromagnetism(
+            from_residual=True)
+    if diamagnetism and ferromagnetism:
+        ratio_DM_FM = abs(
+            measurement.data[Measurement.Columns.DIAMAGNETISM].iloc[-1]
+            / measurement.data[Measurement.Columns.FERROMAGNETISM].iloc[-1])
 
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
