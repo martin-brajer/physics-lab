@@ -27,7 +27,7 @@ def gaussian_curve(x, expected_value, variance, amplitude=None, zero=0):
 
 
 def gaussian_curve_FWHM(variance):
-    return 2 * np.sqrt(2 * np.ln(2)) * variance
+    return 2 * np.sqrt(2 * np.log(2)) * variance
 
 
 def spontaneous_magnetization(T, M0, TC, a, b, zero):
