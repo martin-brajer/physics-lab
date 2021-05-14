@@ -4,17 +4,18 @@ Library
 .. automodule:: physicslab
    :members:
 
-Experiment subpackage
----------------------
+Experiment subpackages
+----------------------
 
 .. toctree::
    :maxdepth: 4
 
    experiment/main
-   experiment/van_der_pauw
+   experiment/curie_temperature
    experiment/hall
    experiment/magnetism_type
-   experiment/curie_temperature
+   experiment/profilometer
+   experiment/van_der_pauw
 
 Modules
 -------
