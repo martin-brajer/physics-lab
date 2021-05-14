@@ -7,7 +7,7 @@ Find Curie temperature from magnetization vs temperature measurement.
 import numpy as np
 import pandas as pd
 
-from scipy.optimize import curve_fit as scipy_optimize_curve_fit
+from scipy.optimize import curve_fit
 
 from physicslab.curves import spontaneous_magnetization
 
@@ -97,7 +97,7 @@ class Measurement():
         """
         p0 = self._parameter_guess(T, M)
         sigma = 1 / T**2 if high_temperature_focus else None
-        popt, pcov = scipy_optimize_curve_fit(
+        popt, pcov = curve_fit(
             f=spontaneous_magnetization, xdata=T, ydata=M, p0=p0, sigma=sigma)
 
         TC = popt[1]

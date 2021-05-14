@@ -96,7 +96,7 @@ class Measurement:
         """ Compute sheet density and determine conductivity type.
 
         :return: Sheet density, conductivity type, fit residual
-        :rtype: tuple
+        :rtype: tuple(float, str, float)
         """
         self.data['hall_resistance'] = Resistance.from_ohms_law(
             self.data[self.Columns.HALLVOLTAGE],
