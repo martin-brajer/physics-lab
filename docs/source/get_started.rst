@@ -11,7 +11,7 @@ Load data
 
 .. code:: python
    
-   # Read *.ods excel.
+   # Read *.ods or excel (spreadsheet).
    data = pd.read_excel('D:\...\data2.ods', sheet_name=0,
                         skiprows=1).dropna(how='all')
    data.name = 'data2'
