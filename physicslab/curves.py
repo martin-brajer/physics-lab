@@ -27,6 +27,13 @@ def gaussian_curve(x, expected_value, variance, amplitude=None, zero=0):
 
 
 def gaussian_curve_FWHM(variance):
+    """ Find FWHM from variance of a Gaussian curve.
+
+    :param variance: Variance
+    :type variance: float
+    :return: Full Width at Half Maximum
+    :rtype: float
+    """
     return 2 * np.sqrt(2 * np.log(2)) * variance
 
 
