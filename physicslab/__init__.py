@@ -5,7 +5,7 @@ Source code (and link to the documentation) can be found at
 """
 
 # __all__ []
-__version__ = '0.4.0'
+__version__ = '1.0.0'
 __author__ = 'Martin Brajer'
 
 
