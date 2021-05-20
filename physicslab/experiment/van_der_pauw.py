@@ -47,14 +47,13 @@ def process(data, thickness=None):
     measurement = Measurement(data)
     (resistivity, conductivity) = [np.nan] * 2
 
-    measurement.find_resistances()
-    Rh, Rv = measurement.group_geometries_and_average()
-    sheet_resistance, ratio_resistance = measurement.analyze(Rh, Rv)
+    Rh, Rv = measurement.analyze()
+    sheet_resistance, ratio_resistance = Solve.analyze(Rh, Rv)
     sheet_conductance = 1 / sheet_resistance
     if thickness is not None:
-        resistivity = Resistivity.from_sheet_resistance(
-            sheet_resistance, thickness)
-        conductivity = sheet_conductance / thickness
+        resistivity = Resistivity.from_sheet_resistance(sheet_resistance,
+                                                        thickness)
+        conductivity = 1 / resistivity
 
     return pd.Series(
         data=(sheet_resistance, ratio_resistance, sheet_conductance,
@@ -101,8 +100,8 @@ class Solve:
         van_der_pauw_constant = np.pi / np.log(2)
         return R * van_der_pauw_constant
 
-    @staticmethod
-    def universal(Rh, Rv, Rs0):
+    @classmethod
+    def universal(cls, Rh, Rv, Rs0):
         """ Compute sheet resistance from the given resistances.
 
         Universal formula. Computation flow for square-like samples is
@@ -110,7 +109,7 @@ class Solve:
 
         .. code:: python
 
-            Rs0 = van_der_pauw.Solve.Square(Rh, Rv)
+            Rs0 = van_der_pauw.Solve.square(Rh, Rv)
             Rs = van_der_pauw.Solve.universal(Rh, Rv, Rs0)
 
         :param Rh: Horizontal resistance
@@ -123,7 +122,30 @@ class Solve:
         :rtype: float
         """
         return scipy_optimize_newton(
-            Solve.implicit_formula, Rs0, args=(Rh, Rv), fprime=None)
+            cls.implicit_formula, Rs0, args=(Rh, Rv), fprime=None)
+
+    @classmethod
+    def analyze(cls, Rh, Rv):
+        """ Solve :meth:`Solve.implicit_formula` to find sample's
+        sheet resistance. Also compute resistance symmetry ratio (always
+        greater than one). The ratio assess how squarish the sample is,
+        quality of ohmic contacts (small, symmetric) etc.
+
+        :param Rh: Horizontal resistance
+        :type Rh: float
+        :param Rv: Vertical resistance
+        :type Rv: float
+        :return: Sheet resistance and symmetry ratio
+        :rtype: tuple(float, float)
+        """
+        Rs0 = cls.square(Rh, Rv)
+        sheet_resistance = cls.universal(Rh, Rv, Rs0)
+
+        ratio_resistance = Rh / Rv
+        if ratio_resistance < 1:
+            ratio_resistance = 1 / ratio_resistance
+
+        return sheet_resistance, ratio_resistance
 
 
 class Measurement:
@@ -143,67 +165,39 @@ class Measurement:
         #:
         CURRENT = 'Current'
         #:
-        RESISTANCE = 'Resistance'
+        RESISTANCE = 'Hall_resistance'
 
     def __init__(self, data):
         self.data = data
 
-    def find_resistances(self):
-        """ Populate :attr:`data.RESISTANCE` using Ohm's law. """
-        self.data.loc[:, self.Columns.RESISTANCE] = Resistance.from_ohms_law(
-            self.data[self.Columns.VOLTAGE], self.data[self.Columns.CURRENT])
+    def analyze(self):
+        """ Classify geometries into either :attr:`Geometry.Horizontal`
+        or :attr:`Geometry.Vertical`. Then average respective hall resistances.
 
-    def group_geometries_and_average(self):
-        """ Classify geometries into either :class:`Geometry.Horizontal`
-        or :class:`Geometry.Vertical`. Then average respective resistances.
+        Additionally save Hall resistances to :data:`data`.
 
         :return: Horizontal and vertical sheet resistances
         :rtype: tuple(float, float)
         """
-        self.data.loc[:, self.Columns.GEOMETRY] = (
-            self.data[self.Columns.GEOMETRY].apply(Geometry.classify))
-        group = {
-            Geometry.RHorizontal: [],
-            Geometry.RVertical: [],
-        }
-        for i, row in self.data.iterrows():
-            group[row[self.Columns.GEOMETRY]].append(
-                row[self.Columns.RESISTANCE])
-        Rh = np.average(group[Geometry.RHorizontal])
-        Rv = np.average(group[Geometry.RVertical])
+        self.data.loc[:, self.Columns.RESISTANCE] = Resistance.from_ohms_law(
+            self.data[self.Columns.VOLTAGE], self.data[self.Columns.CURRENT])
+
+        geometries = self.data[self.Columns.GEOMETRY].apply(Geometry.classify)
+        mask = geometries.apply(Geometry.is_horizontal)
+        Rh = self.data.loc[mask, self.Columns.RESISTANCE].mean()
+        Rv = self.data.loc[~mask, self.Columns.RESISTANCE].mean()
         return Rh, Rv
-
-    def analyze(self, Rh, Rv):
-        """ Solve :meth:`Solve.implicit_formula` to find sample's
-        sheet resistance. Also compute resistance symmetry ratio (always
-        greater than one). The ratio shows how squarish the sample is,
-        quality of ohmic contacts (small, symmetric etc.).
-
-        :param Rh: Horizontal resistance
-        :type Rh: float
-        :param Rv: Vertical resistance
-        :type Rv: float
-        :return: Sheet resistance and symmetry ratio
-        :rtype: tuple(float, float)
-        """
-        Rs0 = Solve.square(Rh, Rv)
-        sheet_resistance = Solve.universal(Rh, Rv, Rs0)
-
-        ratio_resistance = Rh / Rv
-        if ratio_resistance < 1:
-            ratio_resistance = 1 / ratio_resistance
-
-        return sheet_resistance, ratio_resistance
 
 
 class Geometry(enum.Enum):
-    """ Resistance measurement configurations :class:`enum.Enum`.
+    """ Resistance measurement configuration :class:`~enum.Enum`.
 
     Legend: ``Rijkl`` = :math:`R_{ij,kl} = V_{kl}/I_{ij}`. The contacts are
-    numbered from 1 to 4 in a counter-clockwise order, beginning at the
+    numbered from 1 to 4 in a counter-clockwise order beginning at the
     top-left contact. See `Van der Pauw method
     <https://en.wikipedia.org/wiki/Van_der_Pauw_method#Reversed_polarity_measurements>`_
     at Wikipedia.
+    There are two additional group values: ``Vertical`` and ``Horizontal``.
     """
     R1234 = '1234'
     R3412 = '3412'
@@ -215,8 +209,8 @@ class Geometry(enum.Enum):
     R3214 = '3214'
     R1432 = '1432'
 
-    RVertical = '12'
-    RHorizontal = '21'
+    Vertical = '12'
+    Horizontal = '21'
 
     def reverse_polarity(self):
         """ Reverse polarity of voltage and current.
@@ -228,7 +222,7 @@ class Geometry(enum.Enum):
             return self
 
         # len(self.value) == 4
-        new_value = ''.join(  # self.value[pairs][reverse order]
+        new_value = ''.join(  # [self.value[pairs][reverse order] for ...]
             [self.value[i:i+2][::-1] for i in range(0, len(self.value), 2)]
         )
         return Geometry(new_value)
@@ -266,35 +260,13 @@ class Geometry(enum.Enum):
         """
         return permutation_sign(self.value) == 1
 
-    @staticmethod
-    def _classify(geometry):
-        """ Sort given :class:`Geometry` to either vertical or horizontal
-        group.
+    def classify(self):
+        """ Sort the Geometry to either vertical or horizontal group.
 
-        :param geometry: Geometry to evaluate
-        :type geometry: Geometry
-        :return: One of the two main configurations
+        :return: One of the two group configurations
         :rtype: Geometry
         """
-        if geometry.is_horizontal():
-            return Geometry.RHorizontal
+        if self.is_horizontal():
+            return self.Horizontal
         else:
-            return Geometry.RVertical
-
-    @staticmethod
-    def classify(geometry):
-        """ Sort given Geometry to either vertical or horizontal group.
-
-        :param geometry: Geometry to evaluate
-        :type geometry: :class:`Geometry` or :class:`pandas.Series`
-        :return: One of the two main directions
-        :rtype: Geometry
-        """
-        if isinstance(geometry, Geometry):
-            return Geometry._classify(geometry)
-
-        elif isinstance(geometry, pd.Series):
-            return geometry.apply(Geometry._classify)
-
-        else:
-            raise NotImplementedError()
+            return self.Vertical

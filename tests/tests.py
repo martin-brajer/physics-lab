@@ -74,8 +74,8 @@ class TestGeometryMethods(unittest.TestCase):
             vdp.Geometry.R4123.shift(-2)
         )
         self.assertEqual(
-            vdp.Geometry.RHorizontal,
-            vdp.Geometry.RVertical.shift()
+            vdp.Geometry.Horizontal,
+            vdp.Geometry.Vertical.shift()
         )
 
     def test_reverse_polarity(self):
@@ -85,21 +85,18 @@ class TestGeometryMethods(unittest.TestCase):
             vdp.Geometry.R4123.reverse_polarity()
         )
         self.assertEqual(
-            vdp.Geometry.RHorizontal,
-            vdp.Geometry.RHorizontal.reverse_polarity()
+            vdp.Geometry.Horizontal,
+            vdp.Geometry.Horizontal.reverse_polarity()
         )
 
     def test_classify_series(self):
         vdp = physicslab.experiment.van_der_pauw
-
         geometry_series = pd.Series([vdp.Geometry.R1234,
                                      vdp.Geometry.R3214])
-        classified = vdp.Geometry.classify(geometry_series)
-        target_series = pd.Series([vdp.Geometry.RVertical,
-                                   vdp.Geometry.RHorizontal])
-
-        for c, t in zip(classified, target_series):
-            self.assertEqual(c, t)
+        classified = geometry_series.apply(vdp.Geometry._classify)
+        target_series = pd.Series([vdp.Geometry.Vertical,
+                                   vdp.Geometry.Horizontal])
+        self.assertTrue(all(classified == target_series))
 
 
 if __name__ == '__main__':
