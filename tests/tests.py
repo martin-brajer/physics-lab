@@ -93,7 +93,7 @@ class TestGeometryMethods(unittest.TestCase):
         vdp = physicslab.experiment.van_der_pauw
         geometry_series = pd.Series([vdp.Geometry.R1234,
                                      vdp.Geometry.R3214])
-        classified = geometry_series.apply(vdp.Geometry._classify)
+        classified = geometry_series.apply(vdp.Geometry.classify)
         target_series = pd.Series([vdp.Geometry.Vertical,
                                    vdp.Geometry.Horizontal])
         self.assertTrue(all(classified == target_series))
