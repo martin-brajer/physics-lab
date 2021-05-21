@@ -72,9 +72,9 @@ class Measurement():
         def mandatory(cls):
             """ Get the current mandatory column names.
 
-            :rtype: tuple(str)
+            :rtype: set(str)
             """
-            return (cls.POSITION, cls.HEIGHT)
+            return {cls.POSITION, cls.HEIGHT}
 
     class Histogram:
         """ Histogram and fit data. """
@@ -86,7 +86,7 @@ class Measurement():
             self.y_fit = y_fit
 
     def __init__(self, data):
-        if not all(col in data.columns for col in self.Columns.mandatory()):
+        if not self.Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 

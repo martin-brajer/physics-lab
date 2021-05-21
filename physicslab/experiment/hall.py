@@ -76,12 +76,12 @@ class Measurement:
         def mandatory(cls):
             """ Get the current mandatory column names.
 
-            :rtype: tuple(str)
+            :rtype: set(str)
             """
-            return (cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT)
+            return {cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT}
 
     def __init__(self, data):
-        if not all(col in data.columns for col in self.Columns.mandatory()):
+        if not self.Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
