@@ -25,7 +25,7 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
     :type df: pandas.DataFrame
     :param plot_value: Function to convert :attr:`df` value into
         ``ax.plot`` call. `<Signature (ax:Axis, value:object)>`
-    :type plot_value: function
+    :type plot_value: callable
     :param xlabel: Common x axis label, defaults to None
     :type xlabel: str, optional
     :param ylabel: Common y axis label, defaults to None
