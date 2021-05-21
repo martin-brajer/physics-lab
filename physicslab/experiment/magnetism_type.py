@@ -43,7 +43,7 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     """
     measurement = Measurement(data)
     (magnetic_susceptibility, offset, saturation, remanence,
-     coercivity, ratio_DM_FM) = [np.nan] * 7
+     coercivity, ratio_DM_FM) = [np.nan] * 6
 
     if diamagnetism:
         magnetic_susceptibility, offset = measurement.diamagnetism(
