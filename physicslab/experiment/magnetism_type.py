@@ -78,11 +78,11 @@ class Measurement():
         MAGNETICFIELD = 'B'
         #:
         MAGNETIZATION = 'M'
-        #: :data:`data` residue column name suffix.
+        #: :data:`data` residue after DM/FM component subtraction.
         RESIDUAL_MAGNETIZATION = 'M_residual'
         #:
         FERROMAGNETISM = 'Ferromagnetism'
-        #: Simulated data (fit).
+        #:
         DIAMAGNETISM = 'Diamagnetism'
 
         @classmethod
@@ -97,11 +97,6 @@ class Measurement():
         if not self.Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
-        self.reset_residue()
-
-    def reset_residue(self):
-        """ Place a copy :data:`Columns.MAGNETIZATION` to
-        :data:`Columns.RESIDUAL_MAGNETIZATION` column of :data:`data`. """
         self.data[self.Columns.RESIDUAL_MAGNETIZATION] = \
             self.data[self.Columns.MAGNETIZATION].copy()
 
