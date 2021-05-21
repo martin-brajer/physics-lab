@@ -68,8 +68,8 @@ class Measurement():
     Copy magnetization column as :data:`Columns.RESIDUAL_MAGNETIZATION`,
     so individual magnetic effects can be subtracted.
 
-    :param pandas.DataFrame data: Magnetic field, magnetization and temperature
-        data. See :class:`Measurement.Columns` for default column names.
+    :param pandas.DataFrame data: Magnetic field and magnetization data.
+    :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
     class Columns:
@@ -85,7 +85,17 @@ class Measurement():
         #: Simulated data (fit).
         DIAMAGNETISM = 'Diamagnetism'
 
+        @classmethod
+        def mandatory(cls):
+            """ Get the current mandatory column names.
+
+            :rtype: tuple(str)
+            """
+            return (cls.MAGNETICFIELD, cls.MAGNETIZATION)
+
     def __init__(self, data):
+        if not all(col in data.columns for col in self.Columns.mandatory()):
+            raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
         self.reset_residue()
 

@@ -59,8 +59,8 @@ def process(data, thickness=None, sheet_resistance=None):
 class Measurement:
     """ Hall measurement.
 
-    :param pandas.DataFrame data: Voltage/current/magnetic field triples. See
-        :class:`Measurement.Columns` for default column names.
+    :param pandas.DataFrame data: Voltage-current-magnetic field triples.
+    :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
     class Columns:
@@ -72,7 +72,17 @@ class Measurement:
         #:
         CURRENT = 'I'
 
+        @classmethod
+        def mandatory(cls):
+            """ Get the current mandatory column names.
+
+            :rtype: tuple(str)
+            """
+            return (cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT)
+
     def __init__(self, data):
+        if not all(col in data.columns for col in self.Columns.mandatory()):
+            raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
     def is_valid(self):

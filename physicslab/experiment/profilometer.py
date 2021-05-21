@@ -54,7 +54,7 @@ class Measurement():
     """ Profile measurement.
 
     :param pandas.DataFrame data: Position and height data.
-        See :class:`Measurement.Columns` for default column names.
+    :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
     class Columns:
@@ -68,6 +68,14 @@ class Measurement():
         #:
         BACKGROUND = 'Background'
 
+        @classmethod
+        def mandatory(cls):
+            """ Get the current mandatory column names.
+
+            :rtype: tuple(str)
+            """
+            return (cls.POSITION, cls.HEIGHT)
+
     class Histogram:
         """ Histogram and fit data. """
 
@@ -78,6 +86,8 @@ class Measurement():
             self.y_fit = y_fit
 
     def __init__(self, data):
+        if not all(col in data.columns for col in self.Columns.mandatory()):
+            raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
     def analyze(self, zero=0, background_degree=None, edge_values=None):

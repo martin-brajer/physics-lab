@@ -12,8 +12,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
-from physicslab.utility import permutation_sign
 from physicslab.electricity import Resistivity, Resistance
+from physicslab.utility import permutation_sign
 
 
 #: Column names used in :meth:`process` function.
@@ -151,9 +151,9 @@ class Solve:
 class Measurement:
     """ Van der Pauw resistances measurements.
 
-    :param pandas.DataFrame data: Voltage/current pairs or resistances with
-        respective geometries. See :class:`Measurement.Columns` for default
-        column names.
+    :param pandas.DataFrame data: Voltage-current pairs with respective
+        geometries.
+    :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
     class Columns:
@@ -167,7 +167,17 @@ class Measurement:
         #:
         RESISTANCE = 'Hall_resistance'
 
+        @classmethod
+        def mandatory(cls):
+            """ Get the current mandatory column names.
+
+            :rtype: tuple(str)
+            """
+            return (cls.GEOMETRY, cls.VOLTAGE, cls.CURRENT)
+
     def __init__(self, data):
+        if not all(col in data.columns for col in self.Columns.mandatory()):
+            raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
     def analyze(self):
