@@ -1,4 +1,4 @@
-.. Referenced in ``index.rst`` and ``cardAssemblerOverview`` with
+.. Referenced in ``index.rst`` and ``physicslab_overview`` with
    different titles following its roles.
 
 |License| |Unittest| |Documentation Status| |PyPI|
@@ -12,7 +12,8 @@
 .. |PyPI| image:: https://badge.fury.io/py/physicslab.svg
     :target: https://pypi.org/project/physicslab/
 
-Physics Lab is a free and open-source python package. Helps with common experiments.
+Physics Lab is a free and open-source python package. Helps with
+evaluation of common experiments.
 
 Source code can be found on `Github <https://github.com/martin-brajer/physics-lab>`_.
 
