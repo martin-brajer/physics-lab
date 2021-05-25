@@ -1,7 +1,6 @@
-""" Curves.
-
 """
-# __all__ =
+Curves.
+"""
 
 
 import numpy as np

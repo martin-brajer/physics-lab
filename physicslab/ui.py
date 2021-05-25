@@ -1,7 +1,6 @@
-""" User interface.
-
 """
-# __all__ =
+User interface.
+"""
 
 
 import matplotlib.pyplot as plt

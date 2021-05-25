@@ -1,7 +1,6 @@
-""" Utility functions.
-
 """
-# __all__ =
+Utility functions.
+"""
 
 
 import numpy as np

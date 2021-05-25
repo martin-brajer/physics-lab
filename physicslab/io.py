@@ -1,7 +1,6 @@
-""" Filesystem manipulation.
-
 """
-# __all__ =
+Filesystem manipulation.
+"""
 
 
 import os

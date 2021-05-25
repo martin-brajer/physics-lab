@@ -1,5 +1,5 @@
-""" Modules for particular experiments and general functions.
-
+"""
+Modules for particular experiments and general functions.
 """
 
 

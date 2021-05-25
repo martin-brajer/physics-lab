@@ -1,8 +1,8 @@
-""" Electricity related properties.
+"""
+Electricity related properties.
 
 Mainly mutual conversion and units.
 """
-# __all__ =
 
 
 from scipy.constants import e as elementary_charge
