@@ -11,7 +11,7 @@ import numpy as np
 def plot_grid(df, plot_value, xlabel=None, ylabel=None,
               title_label=True, row_label=True, col_label=True,
               legend=False, legend_size=10, show_axis=True,
-              subplots_adjust_kw=None, **kwargs):
+              subplots_adjust_kw=None, add_skip=None, **kwargs):
     """ Construct a figure with the same layout as the input.
 
     For example, use it to display
@@ -46,10 +46,15 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
         :func:`~matplotlib.pyplot.subplots_adjust` call.
         E.g. ``hspace``, defaults to None
     :type subplots_adjust_kw: dict, optional
+    :param add_skip: If a df value matches one of listed items, skip it,
+        defaults to None
+    :type add_skip: list or None, optional
     :param kwargs: All additional keyword arguments are passed to the
         :func:`~matplotlib.pyplot.figure` call. E.g. ``sharex``.
     """
     title = df.name if (title_label and hasattr(df, 'name')) else None
+    if add_skip is None:
+        add_skip = []
 
     nrows, ncols = df.shape
     fig, axs = plt.subplots(num=title, nrows=nrows, ncols=ncols, **kwargs)
@@ -60,8 +65,8 @@ def plot_grid(df, plot_value, xlabel=None, ylabel=None,
                 ax.set_title(col)
             if row_label and j == 0:  # First column.
                 ax.set_ylabel(row.name)
-            isnan = isinstance(value, float) and np.isnan(value)
-            if isnan or value is None:
+            if (value is None or value in add_skip
+                    or isinstance(value, float) and np.isnan(value)):  # np.nan
                 _hide_axis(ax)
                 continue
             if not show_axis:
