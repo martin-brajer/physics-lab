@@ -13,13 +13,13 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
               subplots_adjust_kw=None, **kwargs):
     """ Construct a figure with the same layout as the input.
 
-    For example, use it to display
-    `SEM <https://en.wikipedia.org/wiki/Scanning_electron_microscope>`_
-    images, where rows correspond to different magnifications and columns
-    to samples.
-
-    If a :attr:`df` value is :obj:`None` or :obj:`numpy.nan`, skip the
-    individual plot.
+    | For example, use it to display
+        `SEM <https://en.wikipedia.org/wiki/Scanning_electron_microscope>`_
+        images, where rows correspond to different magnifications and columns
+        to samples.
+    | If a :attr:`df` value is :obj:`None` or :obj:`numpy.nan`, skip the
+        individual plot.
+    | To display all figures, call :func:`~matplotlib.pyplot.show`.
 
     :param df: Data to drive plotting. E.g. filename to load and plot
     :type df: pandas.DataFrame
@@ -39,7 +39,7 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     :param skip: Skip df values matching any of the listed items,
         defaults to None
     :type skip: list, optional
-    :param title: Common title. If ``'auto'``, use :attr:`df.name` if
+    :param title: Common title. If ``auto``, use :attr:`df.name` if
         available, defaults to None
     :type title: str, optional
     :param xlabel: Common x axis label, defaults to None
@@ -57,7 +57,7 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     :type subplots_adjust_kw: dict, optional
     :param kwargs: All additional keyword arguments are passed to the
         :func:`~matplotlib.pyplot.figure` call. E.g. ``sharex``
-    :raises ValueError: If :attr:`df` and :attr:`axs` have different shape
+    :raises ValueError: If :attr:`df` and :attr:`axs` have different shapes
     """
     figure_label = df.name if hasattr(df, 'name') else None
     nrows, ncols = df.shape
