@@ -40,20 +40,6 @@ def squarificate(iterable, filler=None):
     | Example: reshape :class:`list` of 10 filenames into 3x4 array. The two
         new elements will be populated by :attr:`filler`.
 
-    .. warning::
-
-        If elements of :attr:`iterable` are :class:`numpy.ndarray`, array
-        constructor will unpack them to create a multidimensional array. To
-        bypass this behaviour, create a wrapper class:
-
-    .. code:: python
-
-        class Data:
-            def __init__(self, value):
-                self.value = value
-
-        measurements = [Data(measurement) for measurement in measurements]
-
     :param iterable: Source 1D iterable.
     :type iterable: list, numpy.ndarray
     :param filler: Value to pad the array with, defaults to None
@@ -67,12 +53,11 @@ def squarificate(iterable, filler=None):
         array = iterable
     if isinstance(iterable, (pd.Series, pd.DataFrame)):  # Pandas
         array = iterable.values
-    else:
-        if isinstance(iterable[0], (np.ndarray, pd.Series, pd.DataFrame)):
-            raise NotImplementedError(
-                'List of arrays do not work properly. Use wrapper'
-                ' class instead. For details see the documentation.')
-        array = np.array(iterable)  # Other (list, tuple)
+    else:  # Other: list, tuple
+        # Array constructor tries to unpack the elements to create
+        # a multidimensional array, so the following bypasses it.
+        array = np.empty(shape=len(iterable), dtype=object)
+        array[:] = iterable
 
     num = array.shape
     if len(num) > 1:
