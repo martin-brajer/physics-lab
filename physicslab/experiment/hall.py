@@ -11,23 +11,14 @@ import pandas as pd
 from scipy.constants import e as elementary_charge
 
 from physicslab.electricity import carrier_concentration, Mobility, Resistance
-
-
-#: Column names used in :meth:`process` function.
-PROCESS_COLUMNS = [
-    'sheet_density',
-    'conductivity_type',
-    'residual',
-    'concentration',
-    'mobility',
-]
+from physicslab.utility import _ColumnsBase
 
 
 def process(data, thickness=None, sheet_resistance=None):
     """ Bundle method.
 
-    Parameter :attr:`data` must include voltage/current/magnetic field
-    triples. See :class:`Measurement` for details and column names.
+    Parameter :attr:`data` must include voltage, current and magnetic field.
+    See :class:`Columns` for details and column names.
 
     The optional parameters allows to calculate additional quantities:
     `concentration` and `mobility`.
@@ -39,7 +30,7 @@ def process(data, thickness=None, sheet_resistance=None):
     :type thickness: float, optional
     :param sheet_resistance: Defaults to None
     :type sheet_resistance: float, optional
-    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :return: Derived quantities listed in :meth:`Columns.output`.
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
@@ -54,7 +45,39 @@ def process(data, thickness=None, sheet_resistance=None):
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
               concentration, mobility),
-        index=PROCESS_COLUMNS)
+        index=Columns.output())
+
+
+class Columns(_ColumnsBase):
+    """ Bases: :class:`physicslab.utility._ColumnsBase`
+
+    Column names.
+    """
+    MAGNETICFIELD = 'B'
+    HALLVOLTAGE = 'VH'
+    CURRENT = 'I'
+    SHEET_DENSITY = 'sheet_density'
+    CONDUCTIVITY_TYPE = 'conductivity_type'
+    RESIDUAL = 'residual'
+    CONCENTRATION = 'concentration'
+    MOBILITY = 'mobility'
+
+    @classmethod
+    def mandatory(cls):
+        """ Get the current mandatory column names.
+
+        :rtype: set(str)
+        """
+        return {cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT}
+
+    @classmethod
+    def output(cls):
+        """ Get the current values of the :func:`process` output column names.
+
+        :rtype: lits(str)
+        """
+        return [cls.SHEET_DENSITY, cls.CONDUCTIVITY_TYPE, cls.RESIDUAL,
+                cls.CONCENTRATION, cls.MOBILITY]
 
 
 class Measurement:
@@ -64,25 +87,8 @@ class Measurement:
     :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
-    class Columns:
-        """ :data:`data` column names. """
-        #:
-        MAGNETICFIELD = 'B'
-        #:
-        HALLVOLTAGE = 'VH'
-        #:
-        CURRENT = 'I'
-
-        @classmethod
-        def mandatory(cls):
-            """ Get the current mandatory column names.
-
-            :rtype: set(str)
-            """
-            return {cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT}
-
     def __init__(self, data):
-        if not self.Columns.mandatory().issubset(data.columns):
+        if not Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
@@ -110,12 +116,10 @@ class Measurement:
         :rtype: tuple(float, str, float)
         """
         self.data['hall_resistance'] = Resistance.from_ohms_law(
-            self.data[self.Columns.HALLVOLTAGE],
-            self.data[self.Columns.CURRENT])
+            self.data[Columns.HALLVOLTAGE], self.data[Columns.CURRENT])
         coefficients_full = np.polynomial.polynomial.polyfit(
-            self.data['hall_resistance'],
-            self.data[self.Columns.MAGNETICFIELD],
-            1, full=True)
+            self.data['hall_resistance'], self.data[Columns.MAGNETICFIELD],
+            deg=1, full=True)
         slope = coefficients_full[0][1]  # Constant can be found at [0][0].
         fit_residual = coefficients_full[1][0][0]
 

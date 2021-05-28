@@ -11,24 +11,14 @@ import pandas as pd
 from scipy.optimize import curve_fit as scipy_optimize_curve_fit
 
 from physicslab.curves import magnetic_hysteresis_loop
-
-
-#: Column names used in :meth:`process` function.
-PROCESS_COLUMNS = [
-    'magnetic_susceptibility',
-    'offset',
-    'saturation',
-    'remanence',
-    'coercivity',
-    'ratio_DM_FM',
-]
+from physicslab.utility import _ColumnsBase
 
 
 def process(data, diamagnetism=True, ferromagnetism=True):
     """ Bundle method.
 
     Parameter :attr:`data` must include magnetic field and magnetization.
-    See :class:`Measurement` for details and column names.
+    See :class:`Columns` for details and column names.
 
     Output :attr:`ratio_DM_FM` compares max values - probably for the
     strongest magnetic field.
@@ -39,7 +29,7 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     :param ferromagnetism: Look for ferromagnetism contribution,
         defaults to True
     :type ferromagnetism: bool, optional
-    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :return: Derived quantities listed in :meth:`Columns.output`.
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
@@ -53,14 +43,49 @@ def process(data, diamagnetism=True, ferromagnetism=True):
         saturation, remanence, coercivity = measurement.ferromagnetism(
             from_residual=True)
     if diamagnetism and ferromagnetism:
-        ratio_DM_FM = abs(
-            measurement.data[Measurement.Columns.DIAMAGNETISM].iloc[-1]
-            / measurement.data[Measurement.Columns.FERROMAGNETISM].iloc[-1])
+        ratio_DM_FM = abs(measurement.data[Columns.DIAMAGNETISM].iloc[-1]
+                          / measurement.data[Columns.FERROMAGNETISM].iloc[-1])
 
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
               coercivity, ratio_DM_FM),
-        index=PROCESS_COLUMNS)
+        index=Columns.output())
+
+
+class Columns(_ColumnsBase):
+    """ Bases: :class:`physicslab.utility._ColumnsBase`
+
+    Column names.
+    """
+    MAGNETICFIELD = 'B'
+    MAGNETIZATION = 'M'
+    # :data:`data` residue after DM/FM component subtraction.
+    RESIDUAL_MAGNETIZATION = 'M_residual'
+    FERROMAGNETISM = 'Ferromagnetism'
+    DIAMAGNETISM = 'Diamagnetism'
+    MAGNETIC_SUSCEPTIBILITY = 'magnetic_susceptibility'
+    OFFSET = 'offset'
+    SATURATION = 'saturation'
+    REMANENCE = 'remanence'
+    COERCIVITY = 'coercivity'
+    RATIO_DM_FM = 'ratio_DM_FM'
+
+    @classmethod
+    def mandatory(cls):
+        """ Get the current mandatory column names.
+
+        :rtype: set(str)
+        """
+        return {cls.MAGNETICFIELD, cls.MAGNETIZATION}
+
+    @classmethod
+    def output(cls):
+        """ Get the current values of the :func:`process` output column names.
+
+        :rtype: lits(str)
+        """
+        return [cls.MAGNETIC_SUSCEPTIBILITY, cls.OFFSET, cls.SATURATION,
+                cls.REMANENCE, cls.COERCIVITY, cls.RATIO_DM_FM]
 
 
 class Measurement():
@@ -73,39 +98,18 @@ class Measurement():
     :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
-    class Columns:
-        """ :data:`data` column names. """
-        #:
-        MAGNETICFIELD = 'B'
-        #:
-        MAGNETIZATION = 'M'
-        #: :data:`data` residue after DM/FM component subtraction.
-        RESIDUAL_MAGNETIZATION = 'M_residual'
-        #:
-        FERROMAGNETISM = 'Ferromagnetism'
-        #:
-        DIAMAGNETISM = 'Diamagnetism'
-
-        @classmethod
-        def mandatory(cls):
-            """ Get the current mandatory column names.
-
-            :rtype: set(str)
-            """
-            return {cls.MAGNETICFIELD, cls.MAGNETIZATION}
-
     def __init__(self, data):
-        if not self.Columns.mandatory().issubset(data.columns):
+        if not Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
-        self.data[self.Columns.RESIDUAL_MAGNETIZATION] = \
-            self.data[self.Columns.MAGNETIZATION].copy()
+        self.data[Columns.RESIDUAL_MAGNETIZATION] = \
+            self.data[Columns.MAGNETIZATION].copy()
 
     def _magnetization_label(self, from_residual):
         if from_residual:
-            return self.Columns.RESIDUAL_MAGNETIZATION
+            return Columns.RESIDUAL_MAGNETIZATION
         else:
-            return self.Columns.MAGNETIZATION
+            return Columns.MAGNETIZATION
 
     def diamagnetism(self, from_residual=False):
         """ Find diamagnetic component of overall magnetization.
@@ -119,14 +123,14 @@ class Measurement():
         :rtype: tuple
         """
         coef = self._lateral_linear_fit(
-            self.data[self.Columns.MAGNETICFIELD],
+            self.data[Columns.MAGNETICFIELD],
             self.data[self._magnetization_label(from_residual)]
         )
 
         fit = np.polynomial.polynomial.polyval(
-            self.data[self.Columns.MAGNETICFIELD], coef)
-        self.data[self.Columns.DIAMAGNETISM] = fit
-        self.data.loc[:, self.Columns.RESIDUAL_MAGNETIZATION] -= fit
+            self.data[Columns.MAGNETICFIELD], coef)
+        self.data[Columns.DIAMAGNETISM] = fit
+        self.data.loc[:, Columns.RESIDUAL_MAGNETIZATION] -= fit
 
         offset, magnetic_susceptibility = coef
         return magnetic_susceptibility, offset
@@ -176,19 +180,19 @@ class Measurement():
         magnetization = self.data[self._magnetization_label(from_residual)]
         if p0 is None:
             p0 = self._ferromagnetism_parameter_guess(
-                B=self.data[self.Columns.MAGNETICFIELD], M=magnetization)
+                B=self.data[Columns.MAGNETICFIELD], M=magnetization)
         popt, pcov = scipy_optimize_curve_fit(
             f=magnetic_hysteresis_loop,
-            xdata=self.data[self.Columns.MAGNETICFIELD],
+            xdata=self.data[Columns.MAGNETICFIELD],
             ydata=magnetization,
             p0=p0
         )
         saturation, remanence, coercivity = popt
 
         fit = magnetic_hysteresis_loop(
-            self.data[self.Columns.MAGNETICFIELD], *popt)
-        self.data[self.Columns.FERROMAGNETISM] = fit
-        self.data.loc[:, self.Columns.RESIDUAL_MAGNETIZATION] -= fit
+            self.data[Columns.MAGNETICFIELD], *popt)
+        self.data[Columns.FERROMAGNETISM] = fit
+        self.data.loc[:, Columns.RESIDUAL_MAGNETIZATION] -= fit
 
         return saturation, remanence, coercivity
 

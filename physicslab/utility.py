@@ -71,3 +71,14 @@ def squarificate(iterable, filler=None):
                    constant_values=filler)
     array = array.reshape((nrows, ncols))
     return array
+
+
+class _ColumnsBase:
+    """ Abstract base class for :class:`physicslab.experiment.[Any].Columns`
+    classes. """
+    @classmethod
+    def list_all_names(cls):
+        """
+        :rtype: list[str]
+        """
+        return [name for name in dir(cls) if name.isupper()]

@@ -16,24 +16,14 @@ from scipy.optimize import newton as scipy_optimize_newton
 
 from physicslab.electricity import Resistivity, Resistance
 from physicslab.utility import permutation_sign
-
-
-#: Column names used in :meth:`process` function.
-PROCESS_COLUMNS = [
-    'sheet_resistance',
-    'ratio_resistance',
-    'sheet_conductance',
-    'resistivity',
-    'conductivity',
-]
+from physicslab.utility import _ColumnsBase
 
 
 def process(data, thickness=None):
     """ Bundle method.
 
-    Parameter :attr:`data` must include `geometry` column. Then either
-    `voltage` and `current` or `resistance`. See :class:`Measurement`
-    for details and column names.
+    Parameter :attr:`data` must include geometry voltage and current.
+    See :class:`Columns` for details and column names.
 
     The optional parameter allows to calculate additional quantities:
     `resistivity` and `conductivity`.
@@ -43,7 +33,7 @@ def process(data, thickness=None):
     :param thickness: Sample dimension perpendicular to the plane marked
         by the electrical contacts, defaults to None
     :type thickness: float, optional
-    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :return: Derived quantities listed in :meth:`Columns.output`.
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
@@ -60,7 +50,7 @@ def process(data, thickness=None):
     return pd.Series(
         data=(sheet_resistance, ratio_resistance, sheet_conductance,
               resistivity, conductivity),
-        index=PROCESS_COLUMNS)
+        index=Columns.output())
 
 
 class Solve:
@@ -150,6 +140,39 @@ class Solve:
         return sheet_resistance, ratio_resistance
 
 
+class Columns(_ColumnsBase):
+    """ Bases: :class:`physicslab.utility._ColumnsBase`
+
+    Column names.
+    """
+    GEOMETRY = 'Geometry'
+    VOLTAGE = 'Voltage'
+    CURRENT = 'Current'
+    RESISTANCE = 'Hall_resistance'
+    SHEET_RESISTANCE = 'sheet_resistance'
+    RATIO_RESISTANCE = 'ratio_resistance'
+    SHEET_CONDUCTANCE = 'sheet_conductance'
+    RESISTIVITY = 'resistivity'
+    CONDUCTIVITY = 'conductivity'
+
+    @classmethod
+    def mandatory(cls):
+        """ Get the current mandatory column names.
+
+            :rtype: set(str)
+            """
+        return {cls.GEOMETRY, cls.VOLTAGE, cls.CURRENT}
+
+    @classmethod
+    def output(cls):
+        """ Get the current values of the :func:`process` output column names.
+
+        :rtype: lits(str)
+        """
+        return [cls.SHEET_RESISTANCE, cls.RATIO_RESISTANCE,
+                cls.SHEET_CONDUCTANCE, cls.RESISTIVITY, cls.CONDUCTIVITY]
+
+
 class Measurement:
     """ Van der Pauw resistances measurements.
 
@@ -158,27 +181,8 @@ class Measurement:
     :raises ValueError: If :attr:`data` is missing a mandatory column
     """
 
-    class Columns:
-        """ :data:`data` column names. """
-        #:
-        GEOMETRY = 'Geometry'
-        #:
-        VOLTAGE = 'Voltage'
-        #:
-        CURRENT = 'Current'
-        #:
-        RESISTANCE = 'Hall_resistance'
-
-        @classmethod
-        def mandatory(cls):
-            """ Get the current mandatory column names.
-
-            :rtype: set(str)
-            """
-            return {cls.GEOMETRY, cls.VOLTAGE, cls.CURRENT}
-
     def __init__(self, data):
-        if not self.Columns.mandatory().issubset(data.columns):
+        if not Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
@@ -191,13 +195,13 @@ class Measurement:
         :return: Horizontal and vertical sheet resistances
         :rtype: tuple(float, float)
         """
-        self.data.loc[:, self.Columns.RESISTANCE] = Resistance.from_ohms_law(
-            self.data[self.Columns.VOLTAGE], self.data[self.Columns.CURRENT])
+        self.data.loc[:, Columns.RESISTANCE] = Resistance.from_ohms_law(
+            self.data[Columns.VOLTAGE], self.data[Columns.CURRENT])
 
-        geometries = self.data[self.Columns.GEOMETRY].apply(Geometry.classify)
+        geometries = self.data[Columns.GEOMETRY].apply(Geometry.classify)
         mask = geometries.apply(Geometry.is_horizontal)
-        Rh = self.data.loc[mask, self.Columns.RESISTANCE].mean()
-        Rv = self.data.loc[~mask, self.Columns.RESISTANCE].mean()
+        Rh = self.data.loc[mask, Columns.RESISTANCE].mean()
+        Rv = self.data.loc[~mask, Columns.RESISTANCE].mean()
         return Rh, Rv
 
 

@@ -8,25 +8,15 @@ import pandas as pd
 
 from scipy.optimize import curve_fit
 
-import physicslab
-
-
-#: Column names used in :meth:`process` function.
-PROCESS_COLUMNS = [
-    'expected_values',
-    'variances',
-    'amplitudes',
-    'FWHMs',
-    'thickness',
-    'histogram',
-]
+from physicslab.curves import gaussian_curve, gaussian_curve_FWHM
+from physicslab.utility import _ColumnsBase
 
 
 def process(data, **kwargs):
     """ Bundle method.
 
     Parameter :attr:`data` must include position and height.
-    See :class:`Measurement` for details and column names.
+    See :class:`Columns` for details and column names.
 
     Output `histogram` column (type :class:`~Measurement.Histogram`) stores
     histogram data and fit data.
@@ -35,7 +25,7 @@ def process(data, **kwargs):
     :type data: pandas.DataFrame
     :param kwargs: All additional keyword arguments are passed to the
         :meth:`Measurement.analyze` call.
-    :return: Derived quantities listed in :data:`PROCESS_COLUMNS`.
+    :return: Derived quantities listed in :meth:`Columns.output`.
     :rtype: pandas.Series
     """
     measurement = Measurement(data)
@@ -46,7 +36,42 @@ def process(data, **kwargs):
     return pd.Series(
         data=(expected_values, variances, amplitudes, FWHMs, thickness,
               histogram),
-        index=PROCESS_COLUMNS)
+        index=Columns.output())
+
+
+class Columns(_ColumnsBase):
+    """ Bases: :class:`physicslab.utility._ColumnsBase`
+
+    Column names.
+    """
+    POSITION = 'Position'
+    HEIGHT = 'Height'
+    # Height data after background subtraction.
+    HEIGHT_SUB = 'Height_sub'
+    BACKGROUND = 'Background'
+    EXPECTED_VALUES = 'expected_values'
+    VARIANCES = 'variances'
+    AMPLITUDES = 'amplitudes'
+    FWHMS = 'FWHMs'
+    THICKNESS = 'thickness'
+    HISTOGRAM = 'histogram'
+
+    @classmethod
+    def mandatory(cls):
+        """ Get the current mandatory column names.
+
+        :rtype: set(str)
+        """
+        return {cls.POSITION, cls.HEIGHT}
+
+    @classmethod
+    def output(cls):
+        """ Get the current values of the :func:`process` output column names.
+
+        :rtype: lits(str)
+        """
+        return [cls.EXPECTED_VALUES, cls.VARIANCES, cls.AMPLITUDES, cls.FWHMS,
+                cls.THICKNESS, cls.HISTOGRAM]
 
 
 class Measurement():
@@ -55,25 +80,6 @@ class Measurement():
     :param pandas.DataFrame data: Position and height data.
     :raises ValueError: If :attr:`data` is missing a mandatory column
     """
-
-    class Columns:
-        """ :data:`data` column names. """
-        #:
-        POSITION = 'Position'
-        #:
-        HEIGHT = 'Height'
-        #: Height data after background subtraction.
-        HEIGHT_SUB = 'Height_sub'
-        #:
-        BACKGROUND = 'Background'
-
-        @classmethod
-        def mandatory(cls):
-            """ Get the current mandatory column names.
-
-            :rtype: set(str)
-            """
-            return {cls.POSITION, cls.HEIGHT}
 
     class Histogram:
         """ Histogram and fit data. """
@@ -85,7 +91,7 @@ class Measurement():
             self.y_fit = y_fit
 
     def __init__(self, data):
-        if not self.Columns.mandatory().issubset(data.columns):
+        if not Columns.mandatory().issubset(data.columns):
             raise ValueError('Missing mandatory column. See Columns class.')
         self.data = data
 
@@ -107,8 +113,8 @@ class Measurement():
             fit data.
         :rtype: tuple
         """
-        position = self.data[self.Columns.POSITION]
-        height = self.data[self.Columns.HEIGHT]
+        position = self.data[Columns.POSITION]
+        height = self.data[Columns.HEIGHT]
 
         # Background subtraction.
         if background_degree is None:
@@ -121,8 +127,8 @@ class Measurement():
             background = self.background(position, height,
                                          background_degree, edge_values)
         height_sub = height - background
-        self.data[self.Columns.BACKGROUND] = background
-        self.data[self.Columns.HEIGHT_SUB] = height_sub
+        self.data[Columns.BACKGROUND] = background
+        self.data[Columns.HEIGHT_SUB] = height_sub
 
         # Histogram.
         margin = abs(max(height_sub) - min(height_sub)) * 0.05  # 5 %
@@ -135,8 +141,8 @@ class Measurement():
 
         x_fit, y_fit, popt = self._fit_double_gauss(
             x=bin_centers, y=count, zero=zero)
-        FWHM_zero = physicslab.curves.gaussian_curve_FWHM(variance=popt[1])
-        FWHM_layer = physicslab.curves.gaussian_curve_FWHM(variance=popt[4])
+        FWHM_zero = gaussian_curve_FWHM(variance=popt[1])
+        FWHM_layer = gaussian_curve_FWHM(variance=popt[4])
         thickness = popt[3] - popt[0]  # Expected_value difference.
         histogram = self.Histogram(bin_centers, count, x_fit, y_fit)
 
@@ -183,17 +189,19 @@ class Measurement():
 
     def _fit_double_gauss(self, x, y, zero=0):
         x_fit = np.linspace(min(x), max(x), len(x) * 10)
+
         p0 = self._guess_double_gauss(x, y, zero=zero)
         popt, pcov = curve_fit(self._double_gauss, x, y, p0)
+
         y_fit = self._double_gauss(x_fit, *popt)
         return x_fit, y_fit, popt
 
     @ staticmethod
     def _guess_double_gauss(x, y, zero=0):
         epsilon = abs(max(x) - min(x)) / 100
-        mask = (zero - epsilon < x) & (x < zero + epsilon)  # eps neighbourhood
+        mask = (zero - epsilon < x) & (x < zero + epsilon)  # Eps neighbourhood
         y_cut = y.copy()
-        y_cut[mask] = 0  # Cca eq y[~mask].
+        y_cut[mask] = 0  # Cca equal y[~mask].
 
         expected_value_zero = zero
         expected_value_layer = x[np.argmax(y_cut)]
@@ -208,9 +216,5 @@ class Measurement():
     @ staticmethod
     def _double_gauss(x, expected_value1, variance1, amplitude1,
                       expected_value2, variance2, amplitude2):
-        return(
-            physicslab.curves.gaussian_curve(
-                x, expected_value1, variance1, amplitude1)
-            + physicslab.curves.gaussian_curve(
-                x, expected_value2, variance2, amplitude2)
-        )
+        return(gaussian_curve(x, expected_value1, variance1, amplitude1)
+               + gaussian_curve(x, expected_value2, variance2, amplitude2))
