@@ -6,6 +6,8 @@ User interface.
 import matplotlib.pyplot as plt
 import numpy as np
 
+from physicslab.utility import get_name
+
 
 def plot_grid(df, plot_value, fig_axs=None, skip=None,
               title=None, xlabel=None, ylabel=None,
@@ -59,11 +61,10 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
         :func:`~matplotlib.pyplot.figure` call. E.g. ``sharex``
     :raises ValueError: If :attr:`df` and :attr:`axs` have different shapes
     """
-    figure_label = df.name if hasattr(df, 'name') else None
     nrows, ncols = df.shape
     if fig_axs is None:
         fig, axs = plt.subplots(
-            num=figure_label, nrows=nrows, ncols=ncols, **kwargs)
+            num=get_name(df), nrows=nrows, ncols=ncols, **kwargs)
     else:
         fig, axs = fig_axs
         if df.shape != axs.shape:
@@ -90,8 +91,7 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     # Common labels.
     if title is not None:
         if title == 'auto':
-            # If `df.name` doesn't exists, `figure_label` is None.
-            title = figure_label
+            title = get_name(df)
         fig.suptitle(title)
     if xlabel is not None:
         fig.text(0.5, 0.04, xlabel, ha='center')

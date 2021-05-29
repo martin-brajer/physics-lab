@@ -73,6 +73,17 @@ def squarificate(iterable, filler=None):
     return array
 
 
+def get_name(df):
+    """ Find :class:`~pandas.DataFrame` name.
+
+    :param df: Input
+    :type df: pandas.DataFrame or pandas.Series
+    :return: Name or None if name does not exist
+    :rtype: str or None
+    """
+    return df.name if hasattr(df, 'name') else None
+
+
 class _ColumnsBase:
     """ Abstract base class for :class:`physicslab.experiment.[Any].Columns`
     classes. """
