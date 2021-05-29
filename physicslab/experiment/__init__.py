@@ -12,13 +12,13 @@ from physicslab.experiment import profilometer
 from physicslab.experiment import van_der_pauw
 
 
-def process(measurements, by_module, **kwargs):
+def process(data_list, by_module, **kwargs):
     """ Genereal process function calling appropriate :func:`process` function
     from selected :mod:`experiment` module.
 
-    :param measurements: List of measurements, which are passed to the
+    :param data_list: List of measurements, which are passed to the
         appropriate :func:`process` function
-    :type measurements: list(pandas.DataFrame)
+    :type data_list: list(pandas.DataFrame)
     :param by_module: Submodule of :mod:`experiment` by which the individual
         measurements are to be processed
     :type by_module: :mod:`experiment` submodule
@@ -28,7 +28,7 @@ def process(measurements, by_module, **kwargs):
     :rtype: pandas.DataFrame
     """
     output = []
-    for i, data in enumerate(measurements):
+    for i, data in enumerate(data_list):
         series = by_module.process(data, **kwargs)
         series.name = data.name if hasattr(data, 'name') else i
         output.append(series)
