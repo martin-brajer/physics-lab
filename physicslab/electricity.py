@@ -25,6 +25,7 @@ class Mobility:
     field that is pulling them.
     """
 
+    #: SI unit.
     UNIT = 'm^2/V/s'
 
     @staticmethod
@@ -56,7 +57,7 @@ class Resistance:
         :param float resistance: (ohm)
         :param float cross_sectional_area: (meter squared)
         :param float length: (meter)
-        :return: (ohm-metre)
+        :return: (ohm metre)
         :rtype: float
         """
         return resistivity / cross_sectional_area * length
@@ -72,7 +73,7 @@ class Sheet_Resistance:
     def from_resistivity(resistivity, thickness):
         """Find sheet resistance from resistivity.
 
-        :param float resistivity: (ohm-meter)
+        :param float resistivity: (ohm meter)
         :param float thickness: (meter)
         :return: (ohms per square)
         :rtype: float
@@ -84,7 +85,7 @@ class Resistivity:
     """ Material property. """
 
     #: SI unit.
-    UNIT = 'ohm-meter'
+    UNIT = 'ohm meter'
 
     @staticmethod
     def from_sheet_resistance(sheet_resistance, thickness):
@@ -92,7 +93,7 @@ class Resistivity:
 
         :param float sheet_resistance: (ohms per square)
         :param float thickness: (meter)
-        :return: (ohm-metre)
+        :return: (ohm metre)
         :rtype: float
         """
         return sheet_resistance * thickness
@@ -104,7 +105,7 @@ class Resistivity:
         :param float resistance: (ohm)
         :param float cross_sectional_area: (meter squared)
         :param float length: (meter)
-        :return: (ohm-metre)
+        :return: (ohm metre)
         :rtype: float
         """
         return resistance * cross_sectional_area / length
