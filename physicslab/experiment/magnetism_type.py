@@ -24,33 +24,48 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     Output :attr:`ratio_DM_FM` compares max values - probably for the
     strongest magnetic field.
 
-    :param pandas.DataFrame data: Measured data
+    :param data: Measured data. If None, return units instead
+    :type data: pandas.DataFrame or None
     :param diamagnetism: Look for diamagnetism contribution, defaults to True
     :type diamagnetism: bool, optional
     :param ferromagnetism: Look for ferromagnetism contribution,
         defaults to True
     :type ferromagnetism: bool, optional
-    :return: Derived quantities listed in :meth:`Columns.output`.
+    :return: Derived quantities listed in :meth:`Columns.output` or units
     :rtype: pandas.Series
     """
-    measurement = Measurement(data)
-    (magnetic_susceptibility, offset, saturation, remanence,
-     coercivity, ratio_DM_FM) = [np.nan] * 6
+    if data is None:
+        from physicslab.experiment import UNITS
+        name = UNITS
+        # [B] = Oe; [M] = emu
+        magnetic_susceptibility = 'emu/Oe'
+        offset = 'emu'
+        saturation = 'emu'
+        remanence = 'emu'
+        coercivity = 'Oe'
+        ratio_DM_FM = '1'
 
-    if diamagnetism:
-        magnetic_susceptibility, offset = measurement.diamagnetism(
-            from_residual=True)
-    if ferromagnetism:
-        saturation, remanence, coercivity = measurement.ferromagnetism(
-            from_residual=True)
-    if diamagnetism and ferromagnetism:
-        ratio_DM_FM = abs(measurement.data[Columns.DIAMAGNETISM].iloc[-1]
-                          / measurement.data[Columns.FERROMAGNETISM].iloc[-1])
+    else:
+        name = get_name(data)
+        measurement = Measurement(data)
+        (magnetic_susceptibility, offset, saturation, remanence,
+         coercivity, ratio_DM_FM) = [np.nan] * 6
+
+        if diamagnetism:
+            magnetic_susceptibility, offset = measurement.diamagnetism(
+                from_residual=True)
+        if ferromagnetism:
+            saturation, remanence, coercivity = measurement.ferromagnetism(
+                from_residual=True)
+        if diamagnetism and ferromagnetism:
+            ratio_DM_FM = abs(
+                measurement.data[Columns.DIAMAGNETISM].iloc[-1]
+                / measurement.data[Columns.FERROMAGNETISM].iloc[-1])
 
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
               coercivity, ratio_DM_FM),
-        index=Columns.output(), name=get_name(data))
+        index=Columns.output(), name=name)
 
 
 class Columns(_ColumnsBase):

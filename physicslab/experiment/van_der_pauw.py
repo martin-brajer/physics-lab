@@ -31,29 +31,41 @@ def process(data, thickness=None):
     The optional parameter allows to calculate additional quantities:
     `resistivity` and `conductivity`.
 
-    :param data: Measured data
-    :type data: pandas.DataFrame
+    :param data: Measured data. If None, return units instead
+    :type data: pandas.DataFrame or None
     :param thickness: Sample dimension perpendicular to the plane marked
         by the electrical contacts, defaults to None
     :type thickness: float, optional
-    :return: Derived quantities listed in :meth:`Columns.output`.
+    :return: Derived quantities listed in :meth:`Columns.output` or units
     :rtype: pandas.Series
     """
-    measurement = Measurement(data)
-    (resistivity, conductivity) = [np.nan] * 2
+    if data is None:
+        from physicslab.experiment import UNITS
+        import physicslab.electricity as el
+        name = UNITS
+        sheet_resistance = el.Sheet_Resistance.UNIT
+        ratio_resistance = '1'
+        sheet_conductance = el.Sheet_Conductance.UNIT
+        resistivity = el.Resistivity.UNIT
+        conductivity = el.Conductivity.UNIT
 
-    Rh, Rv = measurement.analyze()
-    sheet_resistance, ratio_resistance = Solve.analyze(Rh, Rv)
-    sheet_conductance = 1 / sheet_resistance
-    if thickness is not None:
-        resistivity = Resistivity.from_sheet_resistance(sheet_resistance,
-                                                        thickness)
-        conductivity = 1 / resistivity
+    else:
+        name = get_name(data)
+        measurement = Measurement(data)
+        (resistivity, conductivity) = [np.nan] * 2
+
+        Rh, Rv = measurement.analyze()
+        sheet_resistance, ratio_resistance = Solve.analyze(Rh, Rv)
+        sheet_conductance = 1 / sheet_resistance
+        if thickness is not None:
+            resistivity = Resistivity.from_sheet_resistance(sheet_resistance,
+                                                            thickness)
+            conductivity = 1 / resistivity
 
     return pd.Series(
         data=(sheet_resistance, ratio_resistance, sheet_conductance,
               resistivity, conductivity),
-        index=Columns.output(), name=get_name(data))
+        index=Columns.output(), name=name)
 
 
 class Solve:

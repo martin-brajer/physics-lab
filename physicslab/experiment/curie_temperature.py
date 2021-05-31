@@ -21,18 +21,25 @@ def process(data):
     Parameter :attr:`data` must include temperature and magnetization.
     See :class:`Columns` for details and column names.
 
-    :param data: Measured data
+    :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame
-    :return: Derived quantities listed in :meth:`Columns.output`.
+    :return: Derived quantities listed in :meth:`Columns.output` or units
     :rtype: pandas.Series
     """
-    measurement = Measurement(data)
+    if data is None:
+        from physicslab.experiment import UNITS
+        name = UNITS
+        curie_temperature = 'K'
 
-    curie_temperature = measurement.analyze()
+    else:
+        name = get_name(data)
+        measurement = Measurement(data)
+
+        curie_temperature = measurement.analyze()
 
     return pd.Series(
         data=(curie_temperature,),
-        index=Columns.output(), name=get_name(data))
+        index=Columns.output(), name=name)
 
 
 class Columns(_ColumnsBase):

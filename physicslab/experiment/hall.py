@@ -10,7 +10,7 @@ import pandas as pd
 
 from scipy.constants import e as elementary_charge
 
-from physicslab.electricity import carrier_concentration, Mobility, Resistance
+from physicslab.electricity import Carrier_concentration, Mobility, Resistance
 from physicslab.ui import plot_grid
 from physicslab.utility import _ColumnsBase, squarificate, get_name
 
@@ -24,29 +24,42 @@ def process(data, thickness=None, sheet_resistance=None):
     The optional parameters allows to calculate additional quantities:
     `concentration` and `mobility`.
 
-    :param data: Measured data
-    :type data: pandas.DataFrame
+    :param data: Measured data. If None, return units instead
+    :type data: pandas.DataFrame or None
     :param thickness: Sample dimension perpendicular to the plane marked
         by the electrical contacts, defaults to None
     :type thickness: float, optional
     :param sheet_resistance: Defaults to None
     :type sheet_resistance: float, optional
-    :return: Derived quantities listed in :meth:`Columns.output`.
+    :return: Derived quantities listed in :meth:`Columns.output` or units
     :rtype: pandas.Series
     """
-    measurement = Measurement(data)
-    (concentration, mobility) = [np.nan] * 2
+    if data is None:
+        from physicslab.experiment import UNITS
+        import physicslab.electricity as el
+        name = UNITS
+        sheet_density = el.Carrier_sheet_concentration.UNIT
+        conductivity_type = '<str>'
+        residual = 'T^2'  # Squared y-axis while fitting.
+        concentration = el.Carrier_concentration.UNIT
+        mobility = el.Mobility.UNIT
 
-    sheet_density, conductivity_type, residual = measurement.analyze()
-    if thickness is not None:
-        concentration = carrier_concentration(sheet_density, thickness)
-    if sheet_resistance is not None:
-        mobility = Mobility.from_sheets(sheet_density, sheet_resistance)
+    else:
+        name = get_name(data)
+        measurement = Measurement(data)
+        (concentration, mobility) = [np.nan] * 2
+
+        sheet_density, conductivity_type, residual = measurement.analyze()
+        if thickness is not None:
+            concentration = Carrier_concentration.from_sheet_density(
+                sheet_density, thickness)
+        if sheet_resistance is not None:
+            mobility = Mobility.from_sheets(sheet_density, sheet_resistance)
 
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
               concentration, mobility),
-        index=Columns.output(), name=get_name(data))
+        index=Columns.output(), name=name)
 
 
 class Columns(_ColumnsBase):
@@ -57,7 +70,7 @@ class Columns(_ColumnsBase):
     MAGNETICFIELD = 'B'
     HALLVOLTAGE = 'VH'
     CURRENT = 'I'
-    SHEET_DENSITY = 'sheet_density'
+    SHEET_DENSITY = 'sheet_density'  # Carrier.
     CONDUCTIVITY_TYPE = 'conductivity_type'
     RESIDUAL = 'residual'
     CONCENTRATION = 'concentration'

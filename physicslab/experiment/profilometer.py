@@ -22,22 +22,40 @@ def process(data, **kwargs):
     Output `histogram` column (type :class:`~Measurement.Histogram`) stores
     histogram data and fit data.
 
-    :param data: Measured data
+    :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame
     :param kwargs: All additional keyword arguments are passed to the
         :meth:`Measurement.analyze` call.
-    :return: Derived quantities listed in :meth:`Columns.output`.
+    :return: Derived quantities listed in :meth:`Columns.output` or units
     :rtype: pandas.Series
     """
-    measurement = Measurement(data)
-    # () = [np.nan] * 0
+    if data is None:
+        from physicslab.experiment import UNITS
+        name = UNITS
+        length_unit = 'nm'
+        if 'nanometer' in kwargs and not kwargs['nanometer']:  # Default True.
+            length_unit = 'm'
+        m_m = '({m}, {m})'.format(m=length_unit)
 
-    (expected_values, variances, amplitudes, FWHMs, thickness, histogram
-     ) = measurement.analyze(**kwargs)
+        expected_values = m_m
+        variances = m_m
+        amplitudes = m_m
+        FWHMs = m_m
+        thickness = length_unit
+        histogram = '<class>'
+
+    else:
+        name = get_name(data)
+        measurement = Measurement(data)
+        # () = [np.nan] * 0
+
+        (expected_values, variances, amplitudes, FWHMs, thickness, histogram
+         ) = measurement.analyze(**kwargs)
+
     return pd.Series(
         data=(expected_values, variances, amplitudes, FWHMs, thickness,
               histogram),
-        index=Columns.output(), name=get_name(data))
+        index=Columns.output(), name=name)
 
 
 class Columns(_ColumnsBase):
