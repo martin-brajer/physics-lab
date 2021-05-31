@@ -3,6 +3,7 @@ Profile measurement.
 """
 
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -218,3 +219,36 @@ class Measurement():
                       expected_value2, variance2, amplitude2):
         return(gaussian_curve(x, expected_value1, variance1, amplitude1)
                + gaussian_curve(x, expected_value2, variance2, amplitude2))
+
+
+def plot(data, output, nanometer=True):
+    """ Plot both the data analysis parts and the output histogram.
+
+    :param data:
+    :type data: pandas.DataFrame
+    :param nanometer: Are the data in nm or meters, defaults to True
+    :type nanometer: bool, optional
+    :param output: Analysis data from :func:`physicslab.experiment.process`
+    :type output: pandas.Series
+    """
+    fig, (ax_profile, ax_hist) = plt.subplots(nrows=1, ncols=2)
+    unit = 'nm' if nanometer else 'm'
+    height_label = 'Height ({})'.format(unit)
+
+    # Data.
+    ax_profile.plot(data[Columns.POSITION], data[Columns.HEIGHT_SUB],
+                    'k-', label='Data')
+    ax_profile.plot(data[Columns.POSITION], data[Columns.HEIGHT],
+                    'g-', alpha=.2, label='Raw data')
+    ax_profile.plot(data[Columns.POSITION], data[Columns.BACKGROUND],
+                    'g--', label='Background', alpha=.2)
+    ax_profile.set_xlabel('Position ({})'.format(unit))
+    ax_profile.set_ylabel(height_label)
+    ax_profile.legend()
+
+    # Histogram.
+    histogram = output['histogram']
+    ax_hist.plot(histogram.bin_centers, histogram.count, 'k.-')
+    ax_hist.plot(histogram.x_fit, histogram.y_fit, 'r-', alpha=.3)
+    ax_hist.set_xlabel(height_label)
+    ax_hist.set_ylabel('Count')

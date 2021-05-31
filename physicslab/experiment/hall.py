@@ -11,7 +11,8 @@ import pandas as pd
 from scipy.constants import e as elementary_charge
 
 from physicslab.electricity import carrier_concentration, Mobility, Resistance
-from physicslab.utility import _ColumnsBase
+from physicslab.ui import plot_grid
+from physicslab.utility import _ColumnsBase, squarificate, get_name
 
 
 def process(data, thickness=None, sheet_resistance=None):
@@ -127,3 +128,23 @@ class Measurement:
         sheet_density = abs(signed_sheet_density)
         conductivity_type = self._conductivity_type(signed_sheet_density)
         return sheet_density, conductivity_type, fit_residual
+
+
+def plot(data_list, output):
+    """ Plot all the measurements in a grid
+
+    :param data_list:
+    :type data_list: list[pandas.DataFrame]
+    :param output: Analysis data from :func:`physicslab.experiment.process`
+    :type output: pandas.DataFrame
+    """
+    df = pd.DataFrame(data=squarificate(data_list))
+    df.name = 'Hall effect'
+
+    def plot_value(ax, value: pd.DataFrame):
+        ax.plot(value[Columns.MAGNETICFIELD], value[Columns.HALLVOLTAGE],
+                label=get_name(value), c='k')
+        ax.legend()
+    plot_grid(df, plot_value,
+              title='auto', xlabel='Magnetic field', ylabel='Hall voltage',
+              subplots_adjust_kw={'hspace': 0}, sharex=True)

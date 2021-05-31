@@ -5,6 +5,7 @@ Find Curie temperature from magnetization vs temperature measurement.
 """
 
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -134,3 +135,18 @@ class Measurement():
         b = 0.6
         zero = min(M)
         return M0, TC, a, b, zero
+
+
+def plot(data_list):
+    """ Simple plot data and fit for all measurement at once.
+
+    :param data_list:
+    :type data_list: list[pandas.DataFrame]
+    """
+    plt.figure('Curie temperature')
+    plt.title('Focus on high temperature part while fitting')
+    for data in data_list:
+        T = data[Columns.TEMPERATURE]
+
+        plt.plot(T, data[Columns.MAGNETIZATION], 'ko')
+        plt.plot(T, data[Columns.HIGH_TEMPERATURE_FIT], 'r-')

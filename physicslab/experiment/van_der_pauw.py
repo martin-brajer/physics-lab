@@ -10,13 +10,15 @@ Van der Pauw resistivity measurement.
 
 import enum
 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy.optimize import newton as scipy_optimize_newton
 
 from physicslab.electricity import Resistivity, Resistance
-from physicslab.utility import permutation_sign
-from physicslab.utility import _ColumnsBase
+from physicslab.ui import plot_grid
+from physicslab.utility import _ColumnsBase, permutation_sign, squarificate
 
 
 def process(data, thickness=None):
@@ -286,3 +288,53 @@ class Geometry(enum.Enum):
             return self.Horizontal
         else:
             return self.Vertical
+
+
+def plot(data_list, output):
+    """ Plot individual measurements and results with quality coefficients.
+
+    For plotting details, see:
+    https://matplotlib.org/stable/tutorials/intermediate/gridspec.html#a-complex-nested-gridspec-using-subplotspec
+
+    :param data_list:
+    :type data_list: list[pandas.DataFrame]
+    :param output: Analysis data from :func:`physicslab.experiment.process`
+    :type output: pandas.DataFrame
+    """
+    df = pd.DataFrame(data=squarificate(data_list))
+    title = 'Van der Pauw'
+
+    # Plotting initialization.
+    size = mpl.rcParams['figure.figsize']
+    size = (size[0] * 2, size[1])  # Double width.
+    fig = plt.figure(num=title, figsize=size)
+    outer_grid = fig.add_gridspec(1, 2)
+
+    # Grid plot.
+    inner_grid = outer_grid[0].subgridspec(*df.shape)
+    axs_grid = inner_grid.subplots()
+
+    def plot_value(ax, value: pd.DataFrame):
+        for ori in value['ori'].drop_duplicates():
+            value_ori = value.loc[value['ori'] == ori, :]
+            ax.plot(value_ori[Columns.VOLTAGE],
+                    value_ori[Columns.CURRENT], 'o-')
+    plot_grid(df, plot_value, fig_axs=(fig, axs_grid), title=title,
+              ylabel='Current', row_labels=False, column_labels=False)
+    fig.text(0.30, 0.04, 'Voltage', ha='center')
+
+    # Single plot.
+    ax_plot = fig.add_subplot(outer_grid[1])
+    ax_plot.plot(output[Columns.SHEET_CONDUCTANCE], 'ko:')
+    ax_plot.set_xlabel('Measurement number')
+    ax_plot.set_ylabel('Sheet conductance [$(k\\Omega)^{-1}$]')
+    ax_plot.set_ylim(bottom=0)
+
+    color = 'red'
+    ax_plot_2 = ax_plot.twinx()
+    ax_plot_2.plot(output[Columns.RATIO_RESISTANCE], 'o:', c=color)
+    ax_plot_2.set_ylabel('$R_{12} / R_{23}$ {>1}')
+    ax_plot_2.spines['right'].set_color(color)
+    ax_plot_2.yaxis.label.set_color(color)
+    ax_plot_2.tick_params(axis='y', colors=color)
+    ax_plot_2.set_ylim(bottom=0)

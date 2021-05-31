@@ -5,6 +5,7 @@ Separate diamagnetic and ferromagnetic contributions.
 """
 
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -210,3 +211,20 @@ class Measurement():
         coercivity = abs(max(B) - min(B)) * 0.1  # 10 %
 
         return saturation, remanence, coercivity
+
+
+def plot(data):
+    """ Plot single magnetization measurement separated data
+
+    :param data:
+    :type data: list[pandas.DataFrame]
+    """
+    plt.figure('Magnetism type')
+    B = data[Columns.MAGNETICFIELD]
+
+    plt.plot(B, data[Columns.MAGNETIZATION], 'ko', label='Data')
+    plt.plot(B, data[Columns.DIAMAGNETISM], 'r-', label='Diamagnetism')
+    plt.plot(B, data[Columns.FERROMAGNETISM], 'b-', label='Ferromagnetism')
+    plt.plot(B, data[Columns.RESIDUAL_MAGNETIZATION], 'g-', label='Residue')
+
+    plt.legend()
