@@ -231,7 +231,9 @@ def plot(data, output, nanometer=True):
     :param output: Analysis data from :func:`physicslab.experiment.process`
     :type output: pandas.Series
     """
-    fig, (ax_profile, ax_hist) = plt.subplots(nrows=1, ncols=2)
+    name = get_name(data)
+    fig, (ax_profile, ax_hist) = plt.subplots(num=name, nrows=1, ncols=2)
+    plt.suptitle(name)
     unit = 'nm' if nanometer else 'm'
     height_label = 'Height ({})'.format(unit)
 
