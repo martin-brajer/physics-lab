@@ -70,6 +70,18 @@ Handling Geometry enum.
          geometry = geometry.reverse_polarity()
       return geometry
 
+Plotting.
+
+.. code:: python
+
+   from physicslab.experiment import van_der_pauw
+   
+   data_list = load(sample_name)  # Custom function.
+   output = physicslab.experiment.process(data_list, by_module=van_der_pauw)
+   van_der_pauw.plot(data_list, output)
+   plt.show()
+
+.. image:: _static/experiment.van_der_pauw.plot.png
 
 Magnetism type
 --------------
