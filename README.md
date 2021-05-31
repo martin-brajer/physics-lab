@@ -15,6 +15,7 @@ Documentation can be found on [Read the Docs](https://physics-lab.readthedocs.io
 * Van der Pauw & Hall method
 * Magnetization measurements
 * Batch measurement evaluation
+* Plot the data / analysis output
 * Using [pandas.DataFrame](https://pandas.pydata.org/pandas-docs/dev/reference/frame.html)
 
 

@@ -24,6 +24,7 @@ Features
 * Van der Pauw & Hall method
 * Magnetization measurements
 * Batch measurement evaluation
+* Plot the data / analysis output
 * Using `pandas.DataFrame <https://pandas.pydata.org/pandas-docs/dev/reference/frame.html>`_
 
 
