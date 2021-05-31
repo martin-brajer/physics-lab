@@ -46,7 +46,7 @@ def process(data, thickness=None, sheet_resistance=None):
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
               concentration, mobility),
-        index=Columns.output())
+        index=Columns.output(), name=get_name(data))
 
 
 class Columns(_ColumnsBase):

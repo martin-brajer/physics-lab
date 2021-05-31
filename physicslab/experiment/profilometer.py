@@ -10,7 +10,7 @@ import pandas as pd
 from scipy.optimize import curve_fit
 
 from physicslab.curves import gaussian_curve, gaussian_curve_FWHM
-from physicslab.utility import _ColumnsBase
+from physicslab.utility import _ColumnsBase, get_name
 
 
 def process(data, **kwargs):
@@ -37,7 +37,7 @@ def process(data, **kwargs):
     return pd.Series(
         data=(expected_values, variances, amplitudes, FWHMs, thickness,
               histogram),
-        index=Columns.output())
+        index=Columns.output(), name=get_name(data))
 
 
 class Columns(_ColumnsBase):

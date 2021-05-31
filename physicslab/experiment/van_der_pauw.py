@@ -18,7 +18,8 @@ from scipy.optimize import newton as scipy_optimize_newton
 
 from physicslab.electricity import Resistivity, Resistance
 from physicslab.ui import plot_grid
-from physicslab.utility import _ColumnsBase, permutation_sign, squarificate
+from physicslab.utility import (_ColumnsBase, permutation_sign,
+                                squarificate, get_name)
 
 
 def process(data, thickness=None):
@@ -52,7 +53,7 @@ def process(data, thickness=None):
     return pd.Series(
         data=(sheet_resistance, ratio_resistance, sheet_conductance,
               resistivity, conductivity),
-        index=Columns.output())
+        index=Columns.output(), name=get_name(data))
 
 
 class Solve:

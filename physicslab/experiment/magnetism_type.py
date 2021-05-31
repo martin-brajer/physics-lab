@@ -12,7 +12,7 @@ import pandas as pd
 from scipy.optimize import curve_fit as scipy_optimize_curve_fit
 
 from physicslab.curves import magnetic_hysteresis_loop
-from physicslab.utility import _ColumnsBase
+from physicslab.utility import _ColumnsBase, get_name
 
 
 def process(data, diamagnetism=True, ferromagnetism=True):
@@ -50,7 +50,7 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
               coercivity, ratio_DM_FM),
-        index=Columns.output())
+        index=Columns.output(), name=get_name(data))
 
 
 class Columns(_ColumnsBase):

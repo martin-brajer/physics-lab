@@ -12,7 +12,7 @@ import pandas as pd
 from scipy.optimize import curve_fit
 
 from physicslab.curves import spontaneous_magnetization
-from physicslab.utility import _ColumnsBase
+from physicslab.utility import _ColumnsBase, get_name
 
 
 def process(data):
@@ -32,7 +32,7 @@ def process(data):
 
     return pd.Series(
         data=(curie_temperature,),
-        index=Columns.output())
+        index=Columns.output(), name=get_name(data))
 
 
 class Columns(_ColumnsBase):
