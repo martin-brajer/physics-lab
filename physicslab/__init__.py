@@ -6,7 +6,7 @@ Source code (and link to the documentation) can be found at
 """
 
 
-__version__ = '1.2.0'
+__version__ = '1.3.0'
 __author__ = 'Martin Brajer'
 
 
