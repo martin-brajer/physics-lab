@@ -227,4 +227,6 @@ def plot(data):
     plt.plot(B, data[Columns.FERROMAGNETISM], 'b-', label='Ferromagnetism')
     plt.plot(B, data[Columns.RESIDUAL_MAGNETIZATION], 'g-', label='Residue')
 
+    plt.xlabel('Magnetic field / Oe')
+    plt.ylabel('Magnetization / emu')
     plt.legend()

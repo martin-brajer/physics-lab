@@ -235,7 +235,7 @@ def plot(data, output, nanometer=True):
     fig, (ax_profile, ax_hist) = plt.subplots(num=name, nrows=1, ncols=2)
     plt.suptitle(name)
     unit = 'nm' if nanometer else 'm'
-    height_label = 'Height ({})'.format(unit)
+    height_label = 'Height / {}'.format(unit)
 
     # Data.
     ax_profile.plot(data[Columns.POSITION], data[Columns.HEIGHT_SUB],
@@ -244,7 +244,7 @@ def plot(data, output, nanometer=True):
                     'g-', alpha=.2, label='Raw data')
     ax_profile.plot(data[Columns.POSITION], data[Columns.BACKGROUND],
                     'g--', label='Background', alpha=.2)
-    ax_profile.set_xlabel('Position ({})'.format(unit))
+    ax_profile.set_xlabel('Position / {}'.format(unit))
     ax_profile.set_ylabel(height_label)
     ax_profile.legend()
 

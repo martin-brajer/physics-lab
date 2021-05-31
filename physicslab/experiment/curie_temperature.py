@@ -150,3 +150,6 @@ def plot(data_list):
 
         plt.plot(T, data[Columns.MAGNETIZATION], 'ko')
         plt.plot(T, data[Columns.HIGH_TEMPERATURE_FIT], 'r-')
+
+    plt.xlabel('Temperature / K')
+    plt.ylabel('Magnetization / emu')

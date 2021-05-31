@@ -321,14 +321,14 @@ def plot(data_list, output):
             ax.plot(value_ori[Columns.VOLTAGE],
                     value_ori[Columns.CURRENT], 'o-')
     plot_grid(df, plot_value, fig_axs=(fig, axs_grid), title=title,
-              ylabel='Current', row_labels=False, column_labels=False)
-    fig.text(0.30, 0.04, 'Voltage', ha='center')
+              ylabel='Current / A', row_labels=False, column_labels=False)
+    fig.text(0.30, 0.04, 'Voltage / V', ha='center')
 
     # Single plot.
     ax_plot = fig.add_subplot(outer_grid[1])
     ax_plot.plot(output[Columns.SHEET_CONDUCTANCE], 'ko:')
     ax_plot.set_xlabel('Measurement number')
-    ax_plot.set_ylabel('Sheet conductance [$(k\\Omega)^{-1}$]')
+    ax_plot.set_ylabel('Sheet conductance / $(k\\Omega)^{-1}$')
     ax_plot.set_ylim(bottom=0)
 
     color = 'red'

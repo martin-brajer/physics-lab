@@ -145,6 +145,6 @@ def plot(data_list, output):
         ax.plot(value[Columns.MAGNETICFIELD], value[Columns.HALLVOLTAGE],
                 label=get_name(value), c='k')
         ax.legend()
-    plot_grid(df, plot_value,
-              title='auto', xlabel='Magnetic field', ylabel='Hall voltage',
+    plot_grid(df, plot_value, title='auto',
+              xlabel='Magnetic field / T', ylabel='Hall voltage / V',
               subplots_adjust_kw={'hspace': 0}, sharex=True)
