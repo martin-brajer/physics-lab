@@ -4,6 +4,25 @@ Curves.
 
 
 import numpy as np
+from scipy.constants import h, c, k
+
+
+def black_body_radiation(frequency, T):
+    """
+
+    UNIT = W/sr/m^2/Hz
+
+    To express the law per unit wavelength, input
+    ``frequency = c / wavelength`` (UNIT = W/sr/m^3).
+
+    :param frequency:
+    :type frequency: numpy.ndarray
+    :param T: Temperature
+    :type T: float
+    :return: Spectral radiance
+    :rtype: numpy.ndarray
+    """
+    return 2 * h * frequency**3 / c**2 / (np.exp(h * frequency / k / T) - 1)
 
 
 def gaussian_curve(x, expected_value, variance, amplitude=None, zero=0):
