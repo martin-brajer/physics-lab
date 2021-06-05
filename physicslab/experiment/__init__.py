@@ -46,18 +46,25 @@ def process(data_list, by_module, **kwargs):
 
 
 def print_(df):
-    """ Print the dataframe, include units row if available.
+    """ Print the data including units row if available.
 
-    Does not change the input DataFrame.
+    | Does not change the input DataFrame.
+    | If :class:`~pandas.Series` is supplied, it's printed in the
+        :class:`~pandas.DataFrame` format.
 
-    :param df:
-    :type df: pandas.DataFrame
+    :param df: Data to be printed
+    :type df: pandas.DataFrame or pandas.Series
     """
+    if isinstance(df, pd.Series):
+        df_new = pd.DataFrame(df).transpose()
+        if df.attrs and UNITS in df.attrs:
+            df_new.attrs[UNITS] = df.attrs[UNITS]
+        df = df_new
+
     # :attr:`pandas.Dataframe.attrs` is experimental. See:
     # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.attrs.html
     if df.attrs and UNITS in df.attrs:
         df_units = pd.DataFrame(df.attrs[UNITS]).transpose()  # Make it a row.
-
         df = pd.concat([df_units, df], axis=0)  # Should do hard copy.
 
     print(df)
