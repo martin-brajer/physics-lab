@@ -99,4 +99,4 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     if ylabel is not None:
         fig.text(0.04, 0.5, ylabel, va='center', rotation='vertical')
     if subplots_adjust_kw is not None:
-        plt.subplots_adjust(**subplots_adjust_kw)
+        fig.subplots_adjust(**subplots_adjust_kw)
