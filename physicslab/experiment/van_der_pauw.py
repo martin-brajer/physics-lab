@@ -330,6 +330,10 @@ def plot(data_list, output):
     :type data_list: list[pandas.DataFrame]
     :param output: Analysis data from :func:`physicslab.experiment.process`
     :type output: pandas.DataFrame
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`.
+        Axes are: grid axis array, right plot left axis, right plot right axis
+    :rtype: tuple[~matplotlib.figure.Figure,
+        numpy.ndarray[~matplotlib.axes.Axes]]
     """
     df = pd.DataFrame(data=squarificate(data_list))
     title = 'Van der Pauw'
@@ -368,3 +372,5 @@ def plot(data_list, output):
     ax_plot_2.yaxis.label.set_color(color)
     ax_plot_2.tick_params(axis='y', colors=color)
     ax_plot_2.set_ylim(bottom=0)
+
+    return fig, np.array((axs_grid, ax_plot, ax_plot_2), dtype=object)

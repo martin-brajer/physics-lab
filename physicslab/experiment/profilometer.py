@@ -248,6 +248,9 @@ def plot(data, output, nanometer=True):
     :type nanometer: bool, optional
     :param output: Analysis data from :func:`physicslab.experiment.process`
     :type output: pandas.Series
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
+    :rtype: tuple[~matplotlib.figure.Figure,
+        numpy.ndarray[~matplotlib.axes.Axes]]
     """
     name = get_name(data)
     fig, (ax_profile, ax_hist) = plt.subplots(num=name, nrows=1, ncols=2)
@@ -272,3 +275,5 @@ def plot(data, output, nanometer=True):
     ax_hist.plot(histogram.x_fit, histogram.y_fit, 'r-', alpha=.3)
     ax_hist.set_xlabel(height_label)
     ax_hist.set_ylabel('Count')
+
+    return fig, np.array((ax_profile, ax_hist), dtype=object)

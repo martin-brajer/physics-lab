@@ -149,14 +149,18 @@ def plot(data_list):
 
     :param data_list:
     :type data_list: list[pandas.DataFrame]
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
+    :rtype: tuple[~matplotlib.figure.Figure, ~matplotlib.axes.Axes]
     """
-    plt.figure('Curie temperature')
-    plt.title('Focus on high temperature part while fitting')
+    fig, ax = plt.subplots(num='Curie temperature')
+    ax.set_title('Focus on high temperature part while fitting')
     for data in data_list:
         T = data[Columns.TEMPERATURE]
 
-        plt.plot(T, data[Columns.MAGNETIZATION], 'ko')
-        plt.plot(T, data[Columns.HIGH_TEMPERATURE_FIT], 'r-')
+        ax.plot(T, data[Columns.MAGNETIZATION], 'ko')
+        ax.plot(T, data[Columns.HIGH_TEMPERATURE_FIT], 'r-')
 
-    plt.xlabel('Temperature / K')
-    plt.ylabel('Magnetization / emu')
+    ax.set_xlabel('Temperature / K')
+    ax.set_ylabel('Magnetization / emu')
+
+    return fig, ax

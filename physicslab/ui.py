@@ -37,7 +37,7 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     :param fig_axs: Figure and axis array to draw to. Axis shape must match
         that of :attr:`df`. If None, create a new figure, defaults to None
     :type fig_axs: tuple(~matplotlib.figure.Figure,
-        ~numpy.ndarray(~matplotlib.axes.Axes)), optional
+        numpy.ndarray(~matplotlib.axes.Axes)), optional
     :param skip: Skip df values matching any of the listed items,
         defaults to None
     :type skip: list, optional
@@ -60,6 +60,9 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
     :param kwargs: All additional keyword arguments are passed to the
         :func:`~matplotlib.pyplot.figure` call. E.g. ``sharex``
     :raises ValueError: If :attr:`df` and :attr:`axs` have different shapes
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
+    :rtype: tuple[~matplotlib.figure.Figure,
+        numpy.ndarray[~matplotlib.axes.Axes]]
     """
     nrows, ncols = df.shape
     if fig_axs is None:
@@ -100,3 +103,5 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
         fig.text(0.04, 0.5, ylabel, va='center', rotation='vertical')
     if subplots_adjust_kw is not None:
         fig.subplots_adjust(**subplots_adjust_kw)
+
+    return fig, axs

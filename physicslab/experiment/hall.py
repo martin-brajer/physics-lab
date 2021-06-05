@@ -150,6 +150,9 @@ def plot(data_list, output):
     :type data_list: list[pandas.DataFrame]
     :param output: Analysis data from :func:`physicslab.experiment.process`
     :type output: pandas.DataFrame
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
+    :rtype: tuple[~matplotlib.figure.Figure,
+        numpy.ndarray[~matplotlib.axes.Axes]]
     """
     df = pd.DataFrame(data=squarificate(data_list))
     df.name = 'Hall effect'
@@ -158,6 +161,9 @@ def plot(data_list, output):
         ax.plot(value[Columns.MAGNETICFIELD], value[Columns.HALLVOLTAGE],
                 label=get_name(value), c='k')
         ax.legend()
-    plot_grid(df, plot_value, title='auto',
-              xlabel='Magnetic field / T', ylabel='Hall voltage / V',
-              subplots_adjust_kw={'hspace': 0}, sharex=True)
+    fig, axs = plot_grid(df, plot_value, title='auto',
+                         xlabel='Magnetic field / T',
+                         ylabel='Hall voltage / V',
+                         subplots_adjust_kw={'hspace': 0}, sharex=True)
+
+    return fig, axs

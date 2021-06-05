@@ -233,15 +233,19 @@ def plot(data):
 
     :param data:
     :type data: list[pandas.DataFrame]
+    :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
+    :rtype: tuple[~matplotlib.figure.Figure, ~matplotlib.axes.Axes]
     """
-    plt.figure('Magnetism type')
+    fig, ax = plt.subplots(num='Magnetism type')
     B = data[Columns.MAGNETICFIELD]
 
-    plt.plot(B, data[Columns.MAGNETIZATION], 'ko', label='Data')
-    plt.plot(B, data[Columns.DIAMAGNETISM], 'r-', label='Diamagnetism')
-    plt.plot(B, data[Columns.FERROMAGNETISM], 'b-', label='Ferromagnetism')
-    plt.plot(B, data[Columns.RESIDUAL_MAGNETIZATION], 'g-', label='Residue')
+    ax.plot(B, data[Columns.MAGNETIZATION], 'ko', label='Data')
+    ax.plot(B, data[Columns.DIAMAGNETISM], 'r-', label='Diamagnetism')
+    ax.plot(B, data[Columns.FERROMAGNETISM], 'b-', label='Ferromagnetism')
+    ax.plot(B, data[Columns.RESIDUAL_MAGNETIZATION], 'g-', label='Residue')
 
-    plt.xlabel('Magnetic field / Oe')
-    plt.ylabel('Magnetization / emu')
-    plt.legend()
+    ax.set_xlabel('Magnetic field / Oe')
+    ax.set_ylabel('Magnetization / emu')
+    ax.legend()
+
+    return fig, ax
