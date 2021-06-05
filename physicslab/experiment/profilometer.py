@@ -239,13 +239,13 @@ class Measurement():
                + gaussian_curve(x, expected_value2, variance2, amplitude2))
 
 
-def plot(data, output, nanometer=True):
+def plot(data, output):
     """ Plot both the data analysis parts and the output histogram.
+
+    Units are shown in nanometers.
 
     :param data:
     :type data: pandas.DataFrame
-    :param nanometer: Are the data in nm or meters, defaults to True
-    :type nanometer: bool, optional
     :param output: Analysis data from :func:`physicslab.experiment.process`
     :type output: pandas.Series
     :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
@@ -255,8 +255,7 @@ def plot(data, output, nanometer=True):
     name = get_name(data)
     fig, (ax_profile, ax_hist) = plt.subplots(num=name, nrows=1, ncols=2)
     plt.suptitle(name)
-    unit = 'nm' if nanometer else 'm'
-    height_label = 'Height / {}'.format(unit)
+    height_label = 'Height / nm'
 
     # Data.
     ax_profile.plot(data[Columns.POSITION], data[Columns.HEIGHT_SUB],
@@ -265,7 +264,7 @@ def plot(data, output, nanometer=True):
                     'g-', alpha=.2, label='Raw data')
     ax_profile.plot(data[Columns.POSITION], data[Columns.BACKGROUND],
                     'g--', label='Background', alpha=.2)
-    ax_profile.set_xlabel('Position / {}'.format(unit))
+    ax_profile.set_xlabel('Position / nm')
     ax_profile.set_ylabel(height_label)
     ax_profile.legend()
 
