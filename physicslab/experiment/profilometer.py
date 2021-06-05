@@ -33,8 +33,6 @@ def process(data, **kwargs):
         from physicslab.experiment import UNITS
         name = UNITS
         length_unit = 'nm'
-        if 'nanometer' in kwargs and not kwargs['nanometer']:  # Default True.
-            length_unit = 'm'
         m_m = '({m}, {m})'.format(m=length_unit)
 
         expected_values = m_m
