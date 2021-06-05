@@ -63,6 +63,13 @@ class TestGeometryMethods(unittest.TestCase):
                 geometry.is_vertical() or geometry.is_horizontal()
             )
 
+    def test_parse(self):
+        vdp = physicslab.experiment.van_der_pauw
+        self.assertEqual(
+            vdp.Geometry.R4123,
+            vdp.Geometry('4123')
+        )
+
     def test_shift(self):
         vdp = physicslab.experiment.van_der_pauw
         self.assertEqual(

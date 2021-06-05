@@ -243,6 +243,23 @@ class Geometry(enum.Enum):
     Vertical = '12'
     Horizontal = '21'
 
+    @classmethod
+    def parse(cls, text):
+        """ Parse string to :class:`Geometry`.
+
+        :param text: Any valid permutation of digits 1-4, e.g. ``4123``
+            or ``vertical`` or ``horizontal``
+        :type text: str
+        :raises ValueError: If there is no corresponding :class:`Geometry`
+        :return: Enum corresponding to :attr:`text`
+        :rtype: Geometry
+        """
+        if text == 'vertical':
+            return cls.Vertical
+        elif text == 'horizontal':
+            return cls.Horizontal
+        return cls(text)
+
     def reverse_polarity(self):
         """ Reverse polarity of voltage and current.
 
