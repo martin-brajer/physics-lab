@@ -29,16 +29,16 @@ or utilize the following batch function.
    import pandas as pd
 
    def load(filename):
-      measurement = pd.read_csv(filename + '.csv')
-      measurement.name = filename
-      return measurement
+      data = pd.read_csv(filename + '.csv')
+      data.name = filename
+      return data
    
    thickness = 1.262e-6  # meters
    samples = ['sample#1', 'sample#2', ...]
-   measurements = [load(sample) for sample in samples]
+   data_list = [load(sample) for sample in samples]
    
    results = physicslab.experiment.process(
-      measurements,
+      data_list,
       by_module=physicslab.experiment.van_der_pauw,
       thickness=thickness
    )
@@ -47,6 +47,7 @@ or utilize the following batch function.
 .. code:: bash
  
               sheet_resistance  ratio_resistance  sheet_conductance  resistivity  conductivity
+   units       ohms per square                 1      1/ohms square        ohm m       1/ohm/m
    sample#1       1.590823e+05          1.168956       6.286055e-06     0.200762      4.981026
    sample#2       1.583278e+05          1.185031       6.316009e-06     0.199810      5.004762
    ...
@@ -77,8 +78,8 @@ Plotting.
    from physicslab.experiment import van_der_pauw
    
    data_list = load(sample_name)  # Custom function.
-   output = physicslab.experiment.process(data_list, by_module=van_der_pauw)
-   van_der_pauw.plot(data_list, output)
+   results = physicslab.experiment.process(data_list, by_module=van_der_pauw)
+   van_der_pauw.plot(data_list, results)
    plt.show()
 
 .. image:: _static/experiment.van_der_pauw.plot.png
@@ -91,12 +92,12 @@ Magnetism type
    results = physicslab.experiment.magnetism_type.process(measurement)
    print(results)
 
-   col = physicslab.experiment.magnetism_type.Measurement.Columns
-   B = measurement[col.MAGNETICFIELD]
-   plt.plot(B, measurement[col.MAGNETIZATION], 'ko')  # Original data.
-   plt.plot(B, measurement[col.DIAMAGNETISM], 'r-')  # Separated DIA contribution.
-   plt.plot(B, measurement[col.FERROMAGNETISM], 'b-')  # Separated FM contribution.
-   plt.plot(B, measurement[col.RESIDUAL_MAGNETIZATION], 'g-')  # Residual (unseparated) data.
+   cols = physicslab.experiment.magnetism_type.Columns
+   B = measurement[cols.MAGNETICFIELD]
+   plt.plot(B, measurement[cols.MAGNETIZATION], 'ko')  # Original data.
+   plt.plot(B, measurement[cols.DIAMAGNETISM], 'r-')  # Separated DIA contribution.
+   plt.plot(B, measurement[cols.FERROMAGNETISM], 'b-')  # Separated FM contribution.
+   plt.plot(B, measurement[cols.RESIDUAL_MAGNETIZATION], 'g-')  # Residual (unseparated) data.
    plt.show()
 
 
