@@ -36,7 +36,7 @@ def process(data, thickness=None):
     :param thickness: Sample dimension perpendicular to the plane marked
         by the electrical contacts, defaults to None
     :type thickness: float, optional
-    :return: Derived quantities listed in :meth:`Columns.output` or units
+    :return: Derived quantities listed in :meth:`Columns.process` or units
     :rtype: pandas.Series
     """
     if data is None:
@@ -65,7 +65,7 @@ def process(data, thickness=None):
     return pd.Series(
         data=(sheet_resistance, ratio_resistance, sheet_conductance,
               resistivity, conductivity),
-        index=Columns.output(), name=name)
+        index=Columns.process(), name=name)
 
 
 class Solve:
@@ -179,7 +179,7 @@ class Columns(_ColumnsBase):
         return {cls.GEOMETRY, cls.VOLTAGE, cls.CURRENT}
 
     @classmethod
-    def output(cls):
+    def process(cls):
         """ Get the current values of the :func:`process` output column names.
 
         :rtype: lits(str)
@@ -320,7 +320,7 @@ class Geometry(enum.Enum):
             return self.Vertical
 
 
-def plot(data_list, output):
+def plot(data_list, results):
     """ Plot individual measurements and results with quality coefficients.
 
     For plotting details, see:
@@ -328,8 +328,8 @@ def plot(data_list, output):
 
     :param data_list:
     :type data_list: list[pandas.DataFrame]
-    :param output: Analysis data from :func:`physicslab.experiment.process`
-    :type output: pandas.DataFrame
+    :param results: Analysis data from :func:`physicslab.experiment.process`
+    :type results: pandas.DataFrame
     :return: Same objects as from :meth:`matplotlib.pyplot.subplots`.
         Axes are: grid axis array, right plot left axis, right plot right axis
     :rtype: tuple[~matplotlib.figure.Figure,
@@ -359,14 +359,14 @@ def plot(data_list, output):
 
     # Single plot.
     ax_plot = fig.add_subplot(outer_grid[1])
-    ax_plot.plot(output[Columns.SHEET_CONDUCTANCE], 'ko:')
+    ax_plot.plot(results[Columns.SHEET_CONDUCTANCE], 'ko:')
     ax_plot.set_xlabel('Measurement number')
     ax_plot.set_ylabel('Sheet conductance / $(k\\Omega)^{-1}$')
     ax_plot.set_ylim(bottom=0)
 
     color = 'red'
     ax_plot_2 = ax_plot.twinx()
-    ax_plot_2.plot(output[Columns.RATIO_RESISTANCE], 'o:', c=color)
+    ax_plot_2.plot(results[Columns.RATIO_RESISTANCE], 'o:', c=color)
     ax_plot_2.set_ylabel('$R_{12} / R_{23}$ {>1}')
     ax_plot_2.spines['right'].set_color(color)
     ax_plot_2.yaxis.label.set_color(color)

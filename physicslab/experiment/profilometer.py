@@ -26,7 +26,7 @@ def process(data, **kwargs):
     :type data: pandas.DataFrame
     :param kwargs: All additional keyword arguments are passed to the
         :meth:`Measurement.analyze` call.
-    :return: Derived quantities listed in :meth:`Columns.output` or units
+    :return: Derived quantities listed in :meth:`Columns.process` or units
     :rtype: pandas.Series
     """
     if data is None:
@@ -53,7 +53,7 @@ def process(data, **kwargs):
     return pd.Series(
         data=(expected_values, variances, amplitudes, FWHMs, thickness,
               histogram),
-        index=Columns.output(), name=name)
+        index=Columns.process(), name=name)
 
 
 class Columns(_ColumnsBase):
@@ -82,7 +82,7 @@ class Columns(_ColumnsBase):
         return {cls.POSITION, cls.HEIGHT}
 
     @classmethod
-    def output(cls):
+    def process(cls):
         """ Get the current values of the :func:`process` output column names.
 
         :rtype: lits(str)
@@ -237,15 +237,15 @@ class Measurement():
                + gaussian_curve(x, expected_value2, variance2, amplitude2))
 
 
-def plot(data, output):
-    """ Plot both the data analysis parts and the output histogram.
+def plot(data, results):
+    """ Plot both the data analysis parts and the results histogram.
 
     Units are shown in nanometers.
 
     :param data:
     :type data: pandas.DataFrame
-    :param output: Analysis data from :func:`physicslab.experiment.process`
-    :type output: pandas.Series
+    :param results: Analysis data from :func:`physicslab.experiment.process`
+    :type results: pandas.Series
     :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
     :rtype: tuple[~matplotlib.figure.Figure,
         numpy.ndarray[~matplotlib.axes.Axes]]
@@ -267,7 +267,7 @@ def plot(data, output):
     ax_profile.legend()
 
     # Histogram.
-    histogram = output['histogram']
+    histogram = results['histogram']
     ax_hist.plot(histogram.bin_centers, histogram.count, 'k.-')
     ax_hist.plot(histogram.x_fit, histogram.y_fit, 'r-', alpha=.3)
     ax_hist.set_xlabel(height_label)

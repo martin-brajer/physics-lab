@@ -23,7 +23,7 @@ def process(data):
 
     :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame
-    :return: Derived quantities listed in :meth:`Columns.output` or units
+    :return: Derived quantities listed in :meth:`Columns.process` or units
     :rtype: pandas.Series
     """
     if data is None:
@@ -39,7 +39,7 @@ def process(data):
 
     return pd.Series(
         data=(curie_temperature,),
-        index=Columns.output(), name=name)
+        index=Columns.process(), name=name)
 
 
 class Columns(_ColumnsBase):
@@ -61,7 +61,7 @@ class Columns(_ColumnsBase):
         return {cls.TEMPERATURE, cls.MAGNETIZATION}
 
     @classmethod
-    def output(cls):
+    def process(cls):
         """ Get the current values of the :func:`process` output column names.
 
         :rtype: lits(str)

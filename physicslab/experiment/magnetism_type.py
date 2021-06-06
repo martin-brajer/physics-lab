@@ -31,7 +31,7 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     :param ferromagnetism: Look for ferromagnetism contribution,
         defaults to True
     :type ferromagnetism: bool, optional
-    :return: Derived quantities listed in :meth:`Columns.output` or units
+    :return: Derived quantities listed in :meth:`Columns.process` or units
     :rtype: pandas.Series
     """
     if data is None:
@@ -65,7 +65,7 @@ def process(data, diamagnetism=True, ferromagnetism=True):
     return pd.Series(
         data=(magnetic_susceptibility, offset, saturation, remanence,
               coercivity, ratio_DM_FM),
-        index=Columns.output(), name=name)
+        index=Columns.process(), name=name)
 
 
 class Columns(_ColumnsBase):
@@ -95,7 +95,7 @@ class Columns(_ColumnsBase):
         return {cls.MAGNETICFIELD, cls.MAGNETIZATION}
 
     @classmethod
-    def output(cls):
+    def process(cls):
         """ Get the current values of the :func:`process` output column names.
 
         :rtype: lits(str)

@@ -34,13 +34,13 @@ def process(data_list, by_module, **kwargs):
     :return: Collection of results indexed by measurement's :attr:`name`
     :rtype: pandas.DataFrame
     """
-    output = []
+    results = []
     for i, data in enumerate(data_list):
         series = by_module.process(data, **kwargs)
         series.name = data.name if hasattr(data, 'name') else i
-        output.append(series)
+        results.append(series)
 
-    df = pd.DataFrame(output)
+    df = pd.DataFrame(results)
     df.attrs[UNITS] = by_module.process(None)
     return df
 

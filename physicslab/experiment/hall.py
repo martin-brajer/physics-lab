@@ -31,7 +31,7 @@ def process(data, thickness=None, sheet_resistance=None):
     :type thickness: float, optional
     :param sheet_resistance: Defaults to None
     :type sheet_resistance: float, optional
-    :return: Derived quantities listed in :meth:`Columns.output` or units
+    :return: Derived quantities listed in :meth:`Columns.process` or units
     :rtype: pandas.Series
     """
     if data is None:
@@ -59,7 +59,7 @@ def process(data, thickness=None, sheet_resistance=None):
     return pd.Series(
         data=(sheet_density, conductivity_type, residual,
               concentration, mobility),
-        index=Columns.output(), name=name)
+        index=Columns.process(), name=name)
 
 
 class Columns(_ColumnsBase):
@@ -85,7 +85,7 @@ class Columns(_ColumnsBase):
         return {cls.MAGNETICFIELD, cls.HALLVOLTAGE, cls.CURRENT}
 
     @classmethod
-    def output(cls):
+    def process(cls):
         """ Get the current values of the :func:`process` output column names.
 
         :rtype: lits(str)
@@ -143,13 +143,13 @@ class Measurement:
         return sheet_density, conductivity_type, fit_residual
 
 
-def plot(data_list, output):
+def plot(data_list, results):
     """ Plot all the measurements in a grid
 
     :param data_list:
     :type data_list: list[pandas.DataFrame]
-    :param output: Analysis data from :func:`physicslab.experiment.process`
-    :type output: pandas.DataFrame
+    :param results: Analysis data from :func:`physicslab.experiment.process`
+    :type results: pandas.DataFrame
     :return: Same objects as from :meth:`matplotlib.pyplot.subplots`
     :rtype: tuple[~matplotlib.figure.Figure,
         numpy.ndarray[~matplotlib.axes.Axes]]
