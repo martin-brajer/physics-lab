@@ -75,9 +75,10 @@ def plot_grid(df, plot_value, fig_axs=None, skip=None,
 
     for ax_row, (index, row) in zip(axs, df.iterrows()):
         for ax, (column, value) in zip(ax_row, row.iteritems()):
-            if column_labels and ax.is_first_row():
+            subplotspec = ax.get_subplotspec()
+            if column_labels and subplotspec.is_first_row():
                 ax.set_title(column)
-            if row_labels and ax.is_first_col():
+            if row_labels and subplotspec.is_first_col():
                 ax.set_ylabel(row.name)
             # Skipping this ax.
             if (value is None
