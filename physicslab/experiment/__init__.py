@@ -5,12 +5,12 @@ Modules for particular experiments and general functions.
 
 import pandas as pd
 
-from physicslab.experiment import curie_temperature
-from physicslab.experiment import hall
-from physicslab.experiment import magnetism_type
-from physicslab.experiment import profilometer
-from physicslab.experiment import sem
-from physicslab.experiment import van_der_pauw
+from . import curie_temperature
+from . import hall
+from . import magnetism_type
+from . import profilometer
+from . import sem
+from . import van_der_pauw
 
 
 #: :attr:`pandas.Dataframe.attrs` tag.

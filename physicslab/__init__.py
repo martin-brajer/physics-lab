@@ -10,10 +10,10 @@ __version__ = '1.3.1'
 __author__ = 'Martin Brajer'
 
 
-from physicslab import experiment
+from . import experiment
 
-from physicslab import curves
-from physicslab import electricity
-from physicslab import utility
-from physicslab import io
-from physicslab import ui
+from . import curves
+from . import electricity
+from . import utility
+from . import io
+from . import ui
