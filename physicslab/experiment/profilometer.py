@@ -22,6 +22,9 @@ def process(data, **kwargs):
     Output `histogram` column (type :class:`~Measurement.Histogram`) stores
     histogram data and fit data.
 
+    Supplying `None` for :attr:`data` returns :class:`pandas.Series` of
+    the same columns with values being units.
+
     :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame
     :param kwargs: All additional keyword arguments are passed to the

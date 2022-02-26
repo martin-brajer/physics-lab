@@ -21,6 +21,9 @@ def process(data):
     Parameter :attr:`data` must include temperature and magnetization.
     See :class:`Columns` for details and column names.
 
+    Supplying `None` for :attr:`data` returns :class:`pandas.Series` of
+    the same columns with values being units.
+
     :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame
     :return: Derived quantities listed in :meth:`Columns.process` or units

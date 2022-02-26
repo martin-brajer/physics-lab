@@ -24,6 +24,9 @@ def process(data, thickness=None, sheet_resistance=None):
     The optional parameters allows to calculate additional quantities:
     `concentration` and `mobility`.
 
+    Supplying `None` for :attr:`data` returns :class:`pandas.Series` of
+    the same columns with values being units.
+
     :param data: Measured data. If None, return units instead
     :type data: pandas.DataFrame or None
     :param thickness: Sample dimension perpendicular to the plane marked
