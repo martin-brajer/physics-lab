@@ -3,6 +3,9 @@ Modules for particular experiments and general functions.
 """
 
 
+from types import ModuleType
+from typing import Union
+
 import pandas as pd
 
 from . import curie_temperature
@@ -17,7 +20,7 @@ from . import van_der_pauw
 UNITS = 'units'
 
 
-def process(data_list, by_module, **kwargs):
+def process(data_list: list, by_module: ModuleType, **kwargs) -> pd.DataFrame:
     """ Genereal process function calling appropriate :func:`process` function
     from selected :mod:`experiment` module.
 
@@ -45,7 +48,7 @@ def process(data_list, by_module, **kwargs):
     return df
 
 
-def print_(df):
+def print_(df: Union[pd.DataFrame, pd.Series]) -> None:
     """ Print the data including units row if available.
 
     | Does not change the input DataFrame.
