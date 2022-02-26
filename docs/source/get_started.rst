@@ -150,8 +150,8 @@ ui.plot_grid & utility.squarificate
 
 .. image:: _static/ui.plot_grid.my_title.png
 
-ui.plot_grid
-------------
+Show images
+-----------
 .. code:: python
 
    import matplotlib.image as mpimg
