@@ -64,7 +64,7 @@ def print(df: Union[pd.DataFrame, pd.Series]) -> None:
         units = df.attrs[UNITS]
     else:
         units = None
-    
+
     if isinstance(df, pd.Series):  # Must be after units readout.
         df = pd.DataFrame(df).transpose()
 
