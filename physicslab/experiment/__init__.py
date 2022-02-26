@@ -48,7 +48,7 @@ def process(data_list: list, by_module: ModuleType, **kwargs) -> pd.DataFrame:
     return df
 
 
-def print(df: Union[pd.DataFrame, pd.Series]) -> None:
+def print_(df: Union[pd.DataFrame, pd.Series]) -> None:
     """ Print the data including units row if available.
 
     | Does not change the input DataFrame.
