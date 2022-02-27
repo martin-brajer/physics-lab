@@ -74,15 +74,15 @@ class TestGeometryMethods(unittest.TestCase):
         vdp = physicslab.experiment.van_der_pauw
         self.assertEqual(
             vdp.Geometry.R2341,
-            vdp.Geometry.R4123.shift(2)
+            vdp.Geometry.R4123.rotate(2)
         )
         self.assertEqual(
             vdp.Geometry.R2341,
-            vdp.Geometry.R4123.shift(-2)
+            vdp.Geometry.R4123.rotate(-2)
         )
         self.assertEqual(
             vdp.Geometry.Horizontal,
-            vdp.Geometry.Vertical.shift()
+            vdp.Geometry.Vertical.rotate()
         )
 
     def test_reverse_polarity(self):

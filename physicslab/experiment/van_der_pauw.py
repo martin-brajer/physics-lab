@@ -278,7 +278,7 @@ class Geometry(enum.Enum):
         )
         return Geometry(new_value)
 
-    def shift(self, number=1, counterclockwise=True):
+    def rotate(self, number=1, counterclockwise=True):
         """ Shift measuring pins counterclockwise.
 
         :param number: Number of pins to jump, defaults to 1
